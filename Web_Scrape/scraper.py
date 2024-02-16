@@ -4,9 +4,13 @@ Web scraping API, Creates Database and then writes to Database in intervals
 
 # Import Packages
 import requests
-import json
 import os
+import json
+from jsonschema import validate
+from jsonschema.exceptions import ValidationError
+from datetime import datetime
 from dotenv import load_dotenv
+import sqlalchemy
 from sqlalchemy import (
     create_engine,
     Column,
@@ -19,6 +23,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.dialects.mysql import INTEGER as MySQLInteger
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.exc import IntegrityError
 
 
 # Load .env
@@ -26,6 +31,8 @@ load_dotenv()
 
 # Set Keys
 api_key = os.getenv("URL")
+if api_key is None:
+    raise Exception("Api key not set in .env")
 db_username = os.getenv("DB_USERNAME")
 db_password = os.getenv("DB_PASSWORD")
 
@@ -33,19 +40,82 @@ db_password = os.getenv("DB_PASSWORD")
 # Get data from api and load in json
 def get_data():
     response = requests.get(str(api_key))
-    data = json.loads(response.text)
-    return data
+    if response.status_code != 200:
+        raise Exception(f"API request failed: {response.status_code}")
+    try:
+        data = json.loads(response.text)
 
+        schema = {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "number": {"type": "integer"},
+                    "contract_name": {"type": "string"},
+                    "name": {"type": "string"},
+                    "address": {"type": "string"},
+                    "position": {
+                        "type": "object",
+                        "properties": {
+                            "lat": {"type": "number"},
+                            "lng": {"type": "number"},
+                        },
+                        "required": ["lat", "lng"],
+                    },
+                    "banking": {"type": "boolean"},
+                    "bonus": {"type": "boolean"},
+                    "bike_stands": {"type": "integer"},
+                    "available_bike_stands": {"type": "integer"},
+                    "available_bikes": {"type": "integer"},
+                    "status": {"type": "string"},
+                    "last_update": {"type": "integer"},
+                },
+                "required": [
+                    "number",
+                    "contract_name",
+                    "name",
+                    "address",
+                    "position",
+                    "banking",
+                    "bonus",
+                    "bike_stands",
+                    "available_bike_stands",
+                    "available_bikes",
+                    "status",
+                    "last_update",
+                ],
+            },
+        }
+        validate(instance=data, schema=schema)
+
+        return data
+
+    except json.JSONDecodeError:
+        print("Invalid Error")
+        return None
+    except ValidationError as e:
+        print(f"Json validation error as {e}")
+        return None
+    except Exception as e:
+        print(f"Error fetching data {e}")
+        return None
+
+
+# Use the function
+data = get_data()
 
 # test
-# data = get_data()
+data = get_data()
 # print(data)
 
 # Create connection
 connection_string = (
     f"mysql+mysqlconnector://{db_username}:{db_password}@localhost/test2"
 )
-engine = create_engine(connection_string)
+try:
+    engine = create_engine(connection_string)
+except sqlalchemy.exc.OperationalError as e:
+    print(f"Error connecting to database: {e}")
 
 # Set MetaData()
 meta_data = MetaData()
@@ -82,20 +152,61 @@ meta_data.create_all(engine)
 Session = sessionmaker(bind=engine)
 session = Session()
 
-new_station = {
-    'number': 1,
-    'address': '123 Example Street',
-    'banking': 1,
-    'bike_stands': 15,
-    'name': 'First Station',
-    'position_lat': 40.7128,
-    'position_lng': -74.0060
-}
+if data:
+    try:
+        for point in data:
+            # Check if the record already exists
+            existing_station = (
+                session.query(station_table).filter_by(number=point["number"]).first()
+            )
 
-insert_stmt = station_table.insert().values(**new_station)
-session.execute(insert_stmt)
+            if existing_station is None:
+                station = station_table.insert().values(
+                    number=point["number"],
+                    address=point["address"],
+                    banking=int(point["banking"]),  # Convert boolean to integer
+                    bike_stands=point["bike_stands"],
+                    name=point["name"],
+                    position_lat=point["position"]["lat"],
+                    position_lng=point["position"]["lng"],
+                )
+                session.execute(station)
+                session.commit()
+            else:
+                print(f"Record with number {point['number']} already exists")
+    except IntegrityError as e:
+        session.rollback()
+        print(f"Error: {e}")
 
-session.commit()
+if data:
+    try:
+        for point in data:
+            # Check if the record already exists
+            existing_availability = (
+                session.query(availability_table)
+                .filter_by(
+                    number=point["number"],
+                    last_update=datetime.fromtimestamp(point["last_update"] / 1000),
+                )
+                .first()
+            )
 
-inserted_station = session.query(station_table).filter_by(number=1).first()
-print(inserted_station)
+            if existing_availability is None:
+                availability = availability_table.insert().values(
+                    number=point["number"],
+                    last_update=datetime.fromtimestamp(
+                        point["last_update"] / 1000
+                    ),  # Convert from milliseconds
+                    available_bikes=point["available_bikes"],
+                    available_bike_stands=point["available_bike_stands"],
+                    status=point["status"],
+                )
+                session.execute(availability)
+                session.commit()
+            else:
+                print(
+                    f"Record with number {point['number']} and last_update {point['last_update']} already exists"
+                )
+    except IntegrityError as e:
+        session.rollback()
+        print(f"Error: {e}")
