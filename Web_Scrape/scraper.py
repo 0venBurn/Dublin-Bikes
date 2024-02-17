@@ -35,6 +35,8 @@ if api_key is None:
     raise Exception("Api key not set in .env")
 db_username = os.getenv("DB_USERNAME")
 db_password = os.getenv("DB_PASSWORD")
+db = os.getenv("DB")
+host = os.getenv("HOST")
 
 
 # Get data from api and load in json
@@ -109,9 +111,7 @@ data = get_data()
 # print(data)
 
 # Create connection
-connection_string = (
-    f"mysql+mysqlconnector://{db_username}:{db_password}@localhost/test2"
-)
+connection_string = f"mysql+mysqlconnector://{db_username}:{db_password}@{host}/{db}"
 try:
     engine = create_engine(connection_string)
 except sqlalchemy.exc.OperationalError as e:
