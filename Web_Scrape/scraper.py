@@ -48,19 +48,6 @@ db_password = os.getenv("DB_PASSWORD")
 db = os.getenv("DB")
 host = os.getenv("HOST")
 
-# Load .env
-load_dotenv()
-
-# Set Keys
-api_key = os.getenv("URL")
-if api_key is None:
-    raise Exception("Api key not set in .env")
-db_username = os.getenv("DB_USERNAME")
-db_password = os.getenv("DB_PASSWORD")
-db = os.getenv("DB")
-host = os.getenv("HOST")
-
-
 def get_data():
     """
     Fetches data from an API and validates it against a JSON schema.
