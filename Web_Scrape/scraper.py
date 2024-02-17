@@ -1,8 +1,59 @@
 """
 Web scraping API, Creates Database and then writes to Database in intervals
+
+This script fetches data from an API, validates it against a JSON schema,
+and writes the data to a MySQL database. It consists of several functions
+that handle different tasks such as fetching data, creating a database connection,
+creating database tables, and writing data to the tables.
+
+Functions:
+- get_data(): Fetches data from an API and validates it against a JSON schema.
+- create_connection(): Creates a connection to the MySQL database.
+- create_tables(engine): Creates station and availability tables in the database.
+- write_to_station_table(session, station_table, data): Writes data to the station table in the database.
+- write_to_availability_table(session, availability_table, data): Writes availability data to the specified availability table in the database.
 """
 
-# Import Packages
+import requests
+import os
+import json
+from jsonschema import validate
+from jsonschema.exceptions import ValidationError
+from datetime import datetime
+from dotenv import load_dotenv
+import sqlalchemy
+from sqlalchemy import (
+    create_engine,
+    Column,
+    Integer,
+    String,
+    DateTime,
+    MetaData,
+    Table,
+    Float,
+)
+from sqlalchemy.dialects.mysql import INTEGER as MySQLInteger
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.exc import IntegrityError
+
+# Load .env
+load_dotenv()
+
+# Set Keys
+api_key = os.getenv("URL")
+if api_key is None:
+    raise Exception("Api key not set in .env")
+db_username = os.getenv("DB_USERNAME")
+db_password = os.getenv("DB_PASSWORD")
+db = os.getenv("DB")
+host = os.getenv("HOST")
+
+# Rest of the code...
+"""
+Web scraping API, Creates Database and then writes to Database in intervals
+
+"""
+
 import requests
 import os
 import json
@@ -39,8 +90,13 @@ db = os.getenv("DB")
 host = os.getenv("HOST")
 
 
-# Get data from api and load in json
 def get_data():
+    """
+    Fetches data from an API and validates it against a JSON schema.
+
+    Returns:
+        dict: The fetched data if successful, None otherwise.
+    """
     response = requests.get(str(api_key))
     if response.status_code != 200:
         raise Exception(f"API request failed: {response.status_code}")
@@ -103,56 +159,79 @@ def get_data():
         return None
 
 
-# Use the function
-data = get_data()
+def create_connection():
+    """
+    Creates a connection to the MySQL database.
 
-# test
-data = get_data()
-# print(data)
-
-# Create connection
-connection_string = f"mysql+mysqlconnector://{db_username}:{db_password}@{host}/{db}"
-try:
-    engine = create_engine(connection_string)
-except sqlalchemy.exc.OperationalError as e:
-    print(f"Error connecting to database: {e}")
-
-# Set MetaData()
-meta_data = MetaData()
-
-# Create station table
-station_table = Table(
-    "station",
-    meta_data,
-    Column("number", Integer, primary_key=True),
-    Column("address", String(128)),
-    Column("banking", Integer),
-    Column("bike_stands", Integer),
-    Column("name", String(128)),
-    Column("position_lat", Float),
-    Column("position_lng", Float),
-)
-
-# Create Dynamic Table
-availability_table = Table(
-    "availability",
-    meta_data,
-    Column("number", MySQLInteger, primary_key=True, nullable=False),
-    Column("last_update", DateTime, primary_key=True, nullable=False),
-    Column("available_bikes", Integer),
-    Column("available_bike_stands", Integer),
-    Column("status", String(128)),
-)
+    Returns:
+        engine (sqlalchemy.engine.Engine): The SQLAlchemy engine object representing the database connection.
+        None: If there is an error connecting to the database.
+    """
+    connection_string = (
+        f"mysql+mysqlconnector://{db_username}:{db_password}@{host}/{db}"
+    )
+    try:
+        engine = create_engine(connection_string)
+        return engine
+    except sqlalchemy.exc.OperationalError as e:
+        print(f"Error connecting to database: {e}")
+        return None
 
 
-meta_data.create_all(engine)
+def create_tables(engine):
+    """
+    Creates station and availability tables in the database.
 
-# Testing to write to static table
+    Args:
+        engine (sqlalchemy.engine.Engine): The SQLAlchemy engine object.
 
-Session = sessionmaker(bind=engine)
-session = Session()
+    Returns:
+        tuple: A tuple containing the station table and availability table objects.
 
-if data:
+    """
+    # Set MetaData()
+    meta_data = MetaData()
+
+    # Create station table
+    station_table = Table(
+        "station",
+        meta_data,
+        Column("number", Integer, primary_key=True),
+        Column("address", String(128)),
+        Column("banking", Integer),
+        Column("bike_stands", Integer),
+        Column("name", String(128)),
+        Column("position_lat", Float),
+        Column("position_lng", Float),
+    )
+
+    # Create Dynamic Table
+    availability_table = Table(
+        "availability",
+        meta_data,
+        Column("number", MySQLInteger, primary_key=True, nullable=False),
+        Column("last_update", DateTime, primary_key=True, nullable=False),
+        Column("available_bikes", Integer),
+        Column("available_bike_stands", Integer),
+        Column("status", String(128)),
+    )
+
+    meta_data.create_all(engine)
+    return station_table, availability_table
+
+
+def write_to_station_table(session, station_table, data):
+    """
+    Writes data to the station table in the database.
+
+    Args:
+        session (Session): The database session.
+        station_table (Table): The table object representing the station table.
+        data (list): A list of dictionaries containing the data to be written.
+
+    Returns:
+        None
+    """
     try:
         for point in data:
             # Check if the record already exists
@@ -178,7 +257,19 @@ if data:
         session.rollback()
         print(f"Error: {e}")
 
-if data:
+
+def write_to_availability_table(session, availability_table, data):
+    """
+    Writes availability data to the specified availability table in the database.
+
+    Args:
+        session (Session): The database session.
+        availability_table (Table): The availability table in the database.
+        data (list): A list of availability data points to be written.
+
+    Returns:
+        None
+    """
     try:
         for point in data:
             # Check if the record already exists
@@ -210,3 +301,14 @@ if data:
     except IntegrityError as e:
         session.rollback()
         print(f"Error: {e}")
+
+
+data = get_data()
+engine = create_connection()
+if engine:
+    station_table, availability_table = create_tables(engine)
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    if data:
+        write_to_station_table(session, station_table, data)
+        write_to_availability_table(session, availability_table, data)
