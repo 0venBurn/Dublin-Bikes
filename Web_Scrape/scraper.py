@@ -48,48 +48,6 @@ db_password = os.getenv("DB_PASSWORD")
 db = os.getenv("DB")
 host = os.getenv("HOST")
 
-# Rest of the code...
-"""
-Web scraping API, Creates Database and then writes to Database in intervals
-
-"""
-
-import requests
-import os
-import json
-from jsonschema import validate
-from jsonschema.exceptions import ValidationError
-from datetime import datetime
-from dotenv import load_dotenv
-import sqlalchemy
-from sqlalchemy import (
-    create_engine,
-    Column,
-    Integer,
-    String,
-    DateTime,
-    MetaData,
-    Table,
-    Float,
-)
-from sqlalchemy.dialects.mysql import INTEGER as MySQLInteger
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.exc import IntegrityError
-
-
-# Load .env
-load_dotenv()
-
-# Set Keys
-api_key = os.getenv("URL")
-if api_key is None:
-    raise Exception("Api key not set in .env")
-db_username = os.getenv("DB_USERNAME")
-db_password = os.getenv("DB_PASSWORD")
-db = os.getenv("DB")
-host = os.getenv("HOST")
-
-
 def get_data():
     """
     Fetches data from an API and validates it against a JSON schema.
