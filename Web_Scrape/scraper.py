@@ -39,11 +39,7 @@ from sqlalchemy.exc import IntegrityError
 # Load .env
 load_dotenv()
 
-<<<<<<< HEAD
-# Set Keys
-=======
 # Set credentials and check for errors
->>>>>>> feature-webscraper
 api_key = os.getenv("URL")
 if api_key is None:
     raise Exception("Api key not set in .env")
@@ -52,10 +48,6 @@ db_password = os.getenv("DB_PASSWORD")
 db = os.getenv("DB")
 host = os.getenv("HOST")
 
-<<<<<<< HEAD
-=======
-
->>>>>>> feature-webscraper
 def get_data():
     """
     Fetches data from an API and validates it against a JSON schema.
