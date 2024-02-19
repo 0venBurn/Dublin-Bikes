@@ -14,6 +14,7 @@ Functions:
 - write_to_availability_table(session, availability_table, data): Writes availability data to the specified availability table in the database.
 """
 
+# Import necessary modules
 import requests
 import os
 import json
@@ -39,7 +40,7 @@ from sqlalchemy.exc import IntegrityError
 # Load .env
 load_dotenv()
 
-# Set Keys
+# Set credentials and check for errors
 api_key = os.getenv("URL")
 if api_key is None:
     raise Exception("Api key not set in .env")
@@ -48,19 +49,21 @@ db_password = os.getenv("DB_PASSWORD")
 db = os.getenv("DB")
 host = os.getenv("HOST")
 
+
 def get_data():
     """
     Fetches data from an API and validates it against a JSON schema.
 
     Returns:
-        dict: The fetched data if successful, None otherwise.
+        data: The fetched data if successful, None otherwise.
     """
     response = requests.get(str(api_key))
+    # Check if HTTP request is OK
     if response.status_code != 200:
         raise Exception(f"API request failed: {response.status_code}")
     try:
         data = json.loads(response.text)
-
+        # json schema to validate loaded json
         schema = {
             "type": "array",
             "items": {
@@ -102,10 +105,12 @@ def get_data():
                 ],
             },
         }
+        # Validate json against the schema
         validate(instance=data, schema=schema)
 
         return data
 
+    # Exception block for possible errors
     except json.JSONDecodeError:
         print("Invalid Error")
         return None
@@ -173,7 +178,7 @@ def create_tables(engine):
         Column("available_bike_stands", Integer),
         Column("status", String(128)),
     )
-
+    # Use create_all method to create tables and return tables
     meta_data.create_all(engine)
     return station_table, availability_table
 
@@ -197,6 +202,7 @@ def write_to_station_table(session, station_table, data):
                 session.query(station_table).filter_by(number=point["number"]).first()
             )
 
+            # If it doesn't exist write to data
             if existing_station is None:
                 station = station_table.insert().values(
                     number=point["number"],
@@ -210,7 +216,9 @@ def write_to_station_table(session, station_table, data):
                 session.execute(station)
                 session.commit()
             else:
+                # Print if it exits
                 print(f"Record with number {point['number']} already exists")
+    # Make exception for integrity error and rollback session
     except IntegrityError as e:
         session.rollback()
         print(f"Error: {e}")
@@ -239,7 +247,7 @@ def write_to_availability_table(session, availability_table, data):
                 )
                 .first()
             )
-
+            # If it doesn't exist write to data
             if existing_availability is None:
                 availability = availability_table.insert().values(
                     number=point["number"],
@@ -253,20 +261,26 @@ def write_to_availability_table(session, availability_table, data):
                 session.execute(availability)
                 session.commit()
             else:
+                # Print if it exists
                 print(
                     f"Record with number {point['number']} and last_update {point['last_update']} already exists"
                 )
+    # Make exception for integrity error and rollback session
     except IntegrityError as e:
         session.rollback()
         print(f"Error: {e}")
 
 
+# Get data from api
 data = get_data()
+# Create a connection
 engine = create_connection()
+# If connection is successful create the tables and create session
 if engine:
     station_table, availability_table = create_tables(engine)
     Session = sessionmaker(bind=engine)
     session = Session()
+    # If there is data, write it to the station and availability table in db
     if data:
         write_to_station_table(session, station_table, data)
         write_to_availability_table(session, availability_table, data)
