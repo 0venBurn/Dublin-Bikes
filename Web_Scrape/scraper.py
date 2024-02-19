@@ -33,7 +33,6 @@ from sqlalchemy import (
     Table,
     Float,
 )
-from sqlalchemy.dialects.mysql import INTEGER as MySQLInteger
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
 
@@ -159,7 +158,7 @@ def create_tables(engine):
     station_table = Table(
         "station",
         meta_data,
-        Column("number", Integer, primary_key=True),
+        Column("number", Integer, primary_key=True, autoincrement=False),
         Column("address", String(128)),
         Column("banking", Integer),
         Column("bike_stands", Integer),
@@ -172,8 +171,8 @@ def create_tables(engine):
     availability_table = Table(
         "availability",
         meta_data,
-        Column("number", MySQLInteger, primary_key=True, nullable=False),
-        Column("last_update", DateTime, primary_key=True, nullable=False),
+        Column("number", Integer, primary_key=True, nullable=False, autoincrement=False),
+        Column("last_update", DateTime, primary_key=True, nullable=False, autoincrement=False),
         Column("available_bikes", Integer),
         Column("available_bike_stands", Integer),
         Column("status", String(128)),
