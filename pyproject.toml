@@ -1,0 +1,134 @@
+# --- Project Configuration --------------------------------------------------
+[project]
+name = "swe"
+# CalVer: https://calver.org/. Format: YYYY.MM.DD, e.g. 2024.02.19.
+version = "2024.02.19"
+description = "Software Engineering Project"
+authors = [
+  { name = "Emma Nolan" },
+  { name = "Evan Byrne" },
+  { name = "Adam Herdman" },
+]
+requires-python = ">=3.11"
+dependencies = ["ruff", "mypy"]
+
+# --- Ruff Configuration -----------------------------------------------------
+[tool.ruff]
+# extend-exclude = []   # Add files to exclude from linting and formatting.
+extend-include = ["*.ipynb"]
+fix = true
+line-length = 88
+preview = true
+show-fixes = true
+
+[tool.ruff.format]
+# exclude = []    # Add files to exclude from formatting.
+docstring-code-format = true
+
+[tool.ruff.lint]
+# exclude = []    # Add files to exclude from linting.
+ignore-init-module-imports = true
+select = [
+  "ANN",   # flake8-annotations
+  "ARG",   # flake-8-unused-arguments
+  "ASYNC", # flake8-async
+  "B",     # flake8-bugbear
+  "BLE",   # flake8-blind-except
+  "C4",    # flake8-comprehensions
+  "C90",   # mccabe
+  "D",     # pydocstyle
+  "E",     # pycodestyle
+  "EM",    # flake8-errmsg
+  "EXE",   # flake8-executable
+  "F",     # Pyflakes
+  "FA",    # flake8-future-annotations
+  "FBT",   # flake8-boolean-trap
+  "FLY",   # flynt
+  "FURB",  # refurb
+  "I",     # isort
+  "INP",   # flake8-no-pep420
+  "N",     # pep8-naming
+  "NPY",   # NumPy-specific
+  "PD",    # pandas-vet
+  "PERF",  # perflint
+  "PGH",   # pygrep-hooks
+  "PIE",   # flake8-pie
+  "PL",    # pylint
+  "PTH",   # flake8-use-pathlib
+  "Q",     # flake8-quotes 
+  "RET",   # flake8-return
+  "RSE",   # flake8-raise
+  "RUF",   # Ruff-specific 
+  "S",     # flake8-bandit
+  "SIM",   # flake8-simplify
+  "SLF",   # flake8-self
+  "T10",   # flake8-debugger
+  "TCH",   # flake8-type-checking
+  "TID",   # flake8-tidy-imports
+  "TRIO",  # flake8-trio
+  "TRY",   # tryceratops
+  "UP",    # pyupgrade
+  "W",     # pycodestyle
+  "YTT",   # flake8-2020
+  # "G",   # flake8-logging-format
+  # "LOG", # flake8-logging
+]
+ignore = [
+  # --- Conflicting Rules ---
+  "D206",
+  "D300",
+  "E111",
+  "E114",
+  "E117",
+  "E501",
+  "Q000",
+  "Q001",
+  "Q002",
+  "Q003",
+  "W191",
+  # --- Unwanted Rules ---
+  "E402",   # Might conflict with Flask.
+  "D212",   # Conflicts with D213.
+  "D203",   # Conflicts with D211
+  "ANN401", # Disables using `any-type` for type annotations.
+  # --- Off and On ---
+  # Place rules here that you may want to comment and uncomment throughout the
+  # project development process.
+]
+
+[tool.ruff.lint.flake8-annotations]
+ignore-fully-untyped = true
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+required-imports = ["from __future__ import annotations"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.pycodestyle]
+ignore-overlong-task-comments = true
+
+# --- Mypy Configuration -----------------------------------------------------
+[tool.mypy]
+python_version = "3.11"
+check_untyped_defs = true
+disallow_incomplete_defs = true
+disallow_untyped_defs = false
+ignore_missing_imports = true
+no_implicit_optional = true
+pretty = true
+strict = true
+strict_equality = true
+strict_optional = true
+warn_no_return = false
+warn_redundant_casts = true
+warn_unreachable = true
+warn_unused_configs = true
+warn_unused_ignores = true
+
+# --- Coverage Configuration -------------------------------------------------
+# TODO: Add coverage configuration.
+
+# --- Pytest Configuration ---------------------------------------------------
+# TODO: Add pytest configuration.
