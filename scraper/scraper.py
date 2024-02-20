@@ -22,6 +22,8 @@ from jsonschema import validate
 from jsonschema.exceptions import ValidationError
 from datetime import datetime
 from dotenv import load_dotenv
+from typing import Dict, Any, Optional, List, Tuple
+from sqlalchemy.engine.base import Engine
 import sqlalchemy
 from sqlalchemy import (
     create_engine,
@@ -33,8 +35,9 @@ from sqlalchemy import (
     Table,
     Float,
 )
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import sessionmaker
 
 # Load .env
 load_dotenv()
@@ -48,7 +51,8 @@ db_password = os.getenv("DB_PASSWORD")
 db = os.getenv("DB")
 host = os.getenv("HOST")
 
-def get_data():
+
+def get_data() -> Optional[List[Dict[str, Any]]]:
     """
     Fetches data from an API and validates it against a JSON schema.
 
@@ -106,7 +110,7 @@ def get_data():
         # Validate json against the schema
         validate(instance=data, schema=schema)
 
-        return data
+        return data  # type: ignore
 
     # Exception block for possible errors
     except json.JSONDecodeError:
@@ -120,7 +124,7 @@ def get_data():
         return None
 
 
-def create_connection():
+def create_connection() -> Optional[Engine]:
     """
     Creates a connection to the MySQL database.
 
@@ -139,7 +143,7 @@ def create_connection():
         return None
 
 
-def create_tables(engine):
+def create_tables(engine: Engine) -> Tuple[Table, Table]:
     """
     Creates station and availability tables in the database.
 
@@ -170,8 +174,16 @@ def create_tables(engine):
     availability_table = Table(
         "availability",
         meta_data,
-        Column("number", Integer, primary_key=True, nullable=False, autoincrement=False),
-        Column("last_update", DateTime, primary_key=True, nullable=False, autoincrement=False),
+        Column(
+            "number", Integer, primary_key=True, nullable=False, autoincrement=False
+        ),
+        Column(
+            "last_update",
+            DateTime,
+            primary_key=True,
+            nullable=False,
+            autoincrement=False,
+        ),
         Column("available_bikes", Integer),
         Column("available_bike_stands", Integer),
         Column("status", String(128)),
@@ -181,7 +193,9 @@ def create_tables(engine):
     return station_table, availability_table
 
 
-def write_to_station_table(session, station_table, data):
+def write_to_station_table(
+    session: Session, station_table: Table, data: List[Dict[str, Any]]
+) -> None:
     """
     Writes data to the station table in the database.
 
@@ -222,7 +236,9 @@ def write_to_station_table(session, station_table, data):
         print(f"Error: {e}")
 
 
-def write_to_availability_table(session, availability_table, data):
+def write_to_availability_table(
+    session: Session, availability_table: Table, data: List[Dict[str, Any]]
+) -> None:
     """
     Writes availability data to the specified availability table in the database.
 
@@ -276,8 +292,8 @@ engine = create_connection()
 # If connection is successful create the tables and create session
 if engine:
     station_table, availability_table = create_tables(engine)
-    Session = sessionmaker(bind=engine)
-    session = Session()
+    session_maker = sessionmaker(bind=engine)  # type: ignore
+    session = session_maker()
     # If there is data, write it to the station and availability table in db
     if data:
         write_to_station_table(session, station_table, data)
