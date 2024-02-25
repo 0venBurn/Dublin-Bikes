@@ -14,30 +14,31 @@ Functions:
 - write_to_availability_table(session, availability_table, data): Writes availability data to the specified availability table in the database.
 """
 
+
 # Import necessary modules
-import requests
-import os
 import json
+import os
+from datetime import datetime
+from typing import Any, Dict, List, Optional, Tuple
+
+import requests
+import sqlalchemy
+from dotenv import load_dotenv
 from jsonschema import validate
 from jsonschema.exceptions import ValidationError
-from datetime import datetime
-from dotenv import load_dotenv
-from typing import Dict, Any, Optional, List, Tuple
-from sqlalchemy.engine.base import Engine
-import sqlalchemy
 from sqlalchemy import (
-    create_engine,
     Column,
-    Integer,
-    String,
     DateTime,
-    MetaData,
-    Table,
     Float,
+    Integer,
+    MetaData,
+    String,
+    Table,
+    create_engine,
 )
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.engine.base import Engine
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import Session, sessionmaker
 
 # Load .env
 load_dotenv()
@@ -251,23 +252,19 @@ def write_to_availability_table(
         None
     """
     try:
+        current_datetime = datetime.now()
         for point in data:
             # Check if the record already exists
             existing_availability = (
                 session.query(availability_table)
-                .filter_by(
-                    number=point["number"],
-                    last_update=datetime.fromtimestamp(point["last_update"] / 1000),
-                )
+                .filter_by(number=point["number"], last_update=current_datetime)
                 .first()
             )
             # If it doesn't exist write to data
             if existing_availability is None:
                 availability = availability_table.insert().values(
                     number=point["number"],
-                    last_update=datetime.fromtimestamp(
-                        point["last_update"] / 1000
-                    ),  # Convert from milliseconds
+                    last_update=current_datetime,
                     available_bikes=point["available_bikes"],
                     available_bike_stands=point["available_bike_stands"],
                     status=point["status"],
@@ -277,7 +274,7 @@ def write_to_availability_table(
             else:
                 # Print if it exists
                 print(
-                    f"Record with number {point['number']} and last_update {point['last_update']} already exists"
+                    f"Record with number {point['number']} and last_update {current_datetime} already exists"
                 )
     # Make exception for integrity error and rollback session
     except IntegrityError as e:
