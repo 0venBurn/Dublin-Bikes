@@ -94,6 +94,7 @@ ignore = [
   # --- Off and On ---
   # Place rules here that you may want to comment and uncomment throughout the
   # project development process.
+  "PGH003",
 ]
 
 [tool.ruff.lint.flake8-annotations]

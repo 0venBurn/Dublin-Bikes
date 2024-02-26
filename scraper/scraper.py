@@ -1,5 +1,5 @@
 """
-Web scraping API, Creates Database and then writes to Database in intervals
+Web scraping API, Creates Database and then writes to Database in intervals.
 
 This script fetches data from an API, validates it against a JSON schema,
 and writes the data to a MySQL database. It consists of several functions
@@ -14,12 +14,13 @@ Functions:
 - write_to_availability_table(session, availability_table, data): Writes availability data to the specified availability table in the database.
 """
 
-
 # Import necessary modules
+from __future__ import annotations
+
 import json
 import os
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 import requests
 import sqlalchemy
@@ -53,7 +54,7 @@ db = os.getenv("DB")
 host = os.getenv("HOST")
 
 
-def get_data() -> Optional[List[Dict[str, Any]]]:
+def get_data() -> list[dict[str, Any]] | None:
     """
     Fetches data from an API and validates it against a JSON schema.
 
@@ -125,7 +126,7 @@ def get_data() -> Optional[List[Dict[str, Any]]]:
         return None
 
 
-def create_connection() -> Optional[Engine]:
+def create_connection() -> Engine | None:
     """
     Creates a connection to the MySQL database.
 
@@ -144,7 +145,7 @@ def create_connection() -> Optional[Engine]:
         return None
 
 
-def create_tables(engine: Engine) -> Tuple[Table, Table]:
+def create_tables(engine: Engine) -> tuple[Table, Table]:
     """
     Creates station and availability tables in the database.
 
@@ -195,7 +196,7 @@ def create_tables(engine: Engine) -> Tuple[Table, Table]:
 
 
 def write_to_station_table(
-    session: Session, station_table: Table, data: List[Dict[str, Any]]
+    session: Session, station_table: Table, data: list[dict[str, Any]]
 ) -> None:
     """
     Writes data to the station table in the database.
@@ -238,7 +239,7 @@ def write_to_station_table(
 
 
 def write_to_availability_table(
-    session: Session, availability_table: Table, data: List[Dict[str, Any]]
+    session: Session, availability_table: Table, data: list[dict[str, Any]]
 ) -> None:
     """
     Writes availability data to the specified availability table in the database.
