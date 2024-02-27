@@ -1,14 +1,22 @@
-"""Run the application."""
+"""
+This module serves as the entry point for the Flask application.
 
-from __future__ import annotations
+It is responsible for loading environment variables, initialising the Flask application with its configurations, and starting the Flask server in debug mode on a specified host and port.
+"""
 
 from dotenv import load_dotenv
 
+# Load environment variables from the `.env` file into the system's environment variables.
 load_dotenv()
 
+# Import the create_app function from the app package. This function creates and configures the Flask application.
 from app import create_app
 
+# Create an instance of the Flask application.
 app = create_app()
 
+# Check if the script is executed directly (not imported), then run the app.
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    # Start the Flask application in debug mode on host `0.0.0.0` and port `5000`.
+    # Debug mode allows for live reloading and better error reporting.
+    app.run(debug=True, host="0.0.0.0", port=5000)  # noqa: S104

@@ -102,7 +102,7 @@ ignore-fully-untyped = true
 
 [tool.ruff.lint.isort]
 combine-as-imports = true
-required-imports = ["from __future__ import annotations"]
+# required-imports = ["from __future__ import annotations"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"

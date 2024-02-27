@@ -1,6 +1,5 @@
-"""Models for the app."""
-
-from __future__ import annotations
+"""Module containing database models for stations, availability, and weather."""
+# TODO: Update docstrings to match Evan's descriptions in the scraper files.
 
 from .extensions import db
 
@@ -17,7 +16,7 @@ class Station(db.Model):  # type: ignore
     name = db.Column(db.String(128))
     position_lat = db.Column(db.Float)
     position_lng = db.Column(db.Float)
-    # Create a relationship with the availability table
+    # Create a relationship with the availability table.
     availabilities = db.relationship("Availability", backref="station", lazy=True)
 
 
