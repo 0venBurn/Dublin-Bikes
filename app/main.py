@@ -9,7 +9,9 @@ page with current weather data.
 
 from flask import Blueprint, render_template
 
-from .models import Availability, Station, Weather
+from .models.availability import Availability
+from .models.station import Station
+from .models.weather import Weather
 
 # Create a Blueprint instance for the main module.
 main = Blueprint("main", __name__)

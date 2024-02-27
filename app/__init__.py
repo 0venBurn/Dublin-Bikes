@@ -1,14 +1,25 @@
 """
-This module is responsible for initialising the Flask application.
+This module initialises and configures the Flask application.
 
-It sets up the application configuration, initialises database connections,
-registers blueprints for different parts of the application, and creates
-the database tables if they do not already exist.
+It performs several key functions as part of the application setup process:
+
+- Configures the application based on the environment (development, production, etc.).
+- Initialises database connections using SQLAlchemy.
+- Registers blueprints for organising the application structure.
+- Creates database tables if they do not already exist, ensuring the application's data structure is prepared.
+
+Functions:
+    create_app(): Initialises and returns a Flask application instance configured based on the environment.
+
 """
 
 import os
 
 from flask import Flask
+
+from configs.base import Config
+from configs.development import DevelopmentConfig
+from configs.production import ProductionConfig
 
 from .extensions import db
 from .main import main as main_blueprint
@@ -16,37 +27,35 @@ from .main import main as main_blueprint
 
 def create_app():
     """
-    Creates and configures an instance of a Flask application.
+    Initialises and configures the Flask application.
+
+    Determines the configuration to use based on the FLASK_ENV environment variable, initialises the database, and registers application blueprints.
 
     Returns:
-        Flask: The Flask application instance.
+        Flask: The initialized Flask application.
     """
-    # Instatiate the Flask application.
+    # Create a new Flask application instance.
     app = Flask(__name__)
 
-    # Load the application configuration.
-    # Environment variables are used for configuration to enhance security and flexibility.
-    username = os.getenv("DB_USERNAME")
-    password = os.getenv("DB_PASSWORD")
-    database = os.getenv("DB")
-    host = os.getenv("HOST")
+    # Determine which configuration to use based on the FLASK_ENV environment variable.
+    # This allows for flexible application behavior depending on the environment it's running in.
+    env = os.getenv("FLASK_ENV", "development")
+    if env == "production":
+        # Use production settings for deployment.
+        app.config.from_object(ProductionConfig)
+    elif env == "development":
+        # Use development settings for debugging and local development.
+        app.config.from_object(DevelopmentConfig)
+    else:
+        # Default to base configuration if no environment is specified.
+        app.config.from_object(Config)
 
-    # Configure the database URI for SQLAlchemy.
-    # This URI contains the database connection information required by SQLAlchemy.
-    app.config["SQLALCHEMY_DATABASE_URI"] = (
-        f"mysql+pymysql://{username}:{password}@{host}/{database}"
-    )
-    # Disable the SQLAlchemy event system, which can lead to significant overhead if not needed.
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
-    # Initialise the SQLAlchemy extension with the Flask app context.
+    # Initialise the database connection with the Flask application.
     db.init_app(app)
-
-    # Register blueprints for different parts of the application.
+    # Register the main blueprint for routing.
     app.register_blueprint(main_blueprint)
 
-    # Create database tables.
-    # This is done within the application context to ensure all models are known.
+    # Create database tables if they do not already exist.
     with app.app_context():
         db.create_all()
 
