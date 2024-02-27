@@ -1,3 +1,20 @@
+"""
+This module contains a script that scrapes weather data from an API and inserts it into a MySQL database.
+
+The script retrieves weather data for a specific location (latitude and longitude) using an API key and URL
+specified in the environment variables. It then connects to a MySQL database using the credentials from the
+environment variables and creates a table to store the weather data. The retrieved weather data is then
+inserted into the table.
+
+Note: Make sure to set the necessary environment variables before running this script.
+
+Example usage:
+    $ python weather_scraper.py
+"""
+
+# Load .env
+from __future__ import annotations
+
 import os
 from datetime import datetime
 
@@ -17,13 +34,14 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Session
 
-# Load .env
 load_dotenv()
+
 
 api_key = os.getenv("WEATHER_API")
 url = str(os.getenv("WEATHER_URL"))
 if api_key is None:
-    raise Exception("Api key not set in .env")
+    msg = "Api key not set in .env"
+    raise Exception(msg)  # noqa: TRY002
 db_username = os.getenv("DB_USERNAME")
 db_password = os.getenv("DB_PASSWORD")
 db = os.getenv("DB")
@@ -37,9 +55,11 @@ params = {
     "appid": api_key,  # Your API key
 }
 
-response = requests.get(url, params=params)
+SUCCESS_STATUS_CODE = 200
 
-if response.status_code == 200:
+response = requests.get(url, params=params, timeout=5)  # Add timeout parameter
+
+if response.status_code == SUCCESS_STATUS_CODE:
     data = response.json()
     print(data)
 else:
