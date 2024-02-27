@@ -1,25 +1,12 @@
-name: swe
+name: swe_flask
 channels:
   - defaults
 dependencies:
-  - tk=8.6.12
-  - setuptools=68.2.2
-  - pip=23.3.1
-  - readline=8.2
-  - openssl==3.0.13
-  - wheel=0.41.2
-  - ca-certificates=2023.12.12
-  - sqlite=3.41.2
-  - zlib=1.2.13
-  - tzdata=2023d
-  - python=3.11.7
-  - bzip2=1.0.8
-  - ncurses=6.4
-  - libffi=3.4.4
-  - xz=5.4.5
-  - python-dotenv
-  - jsonschema
+  - python=3.11
+  - flask
   - requests
   - sqlalchemy
-  - flask
-  - conda-forge::flask-sqlalchemy
+  - python-dotenv
+  - jsonschema
+  - mysql
+prefix: /Users/emma/.local/share/anaconda3/envs/swe_flask
