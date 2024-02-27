@@ -28,7 +28,7 @@ def create_app():
     """
     Initialises and configures the Flask application.
 
-    Determines the configuration to use based on the FLASK_ENV environment variable, initialises the database, and registers application blueprints.
+    Determines the configuration to use based on the FLASK_CONFIG environment variable, initialises the database, and registers application blueprints.
 
     Returns:
         Flask: The initialized Flask application.
@@ -53,9 +53,5 @@ def create_app():
     db.init_app(app)
     # Register the main blueprint for routing.
     app.register_blueprint(main_blueprint)
-
-    # Create database tables if they do not already exist.
-    with app.app_context():
-        db.create_all()
 
     return app
