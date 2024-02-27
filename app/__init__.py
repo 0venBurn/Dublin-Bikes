@@ -17,9 +17,9 @@ import os
 
 from flask import Flask
 
-from configs.base import Config
-from configs.development import DevelopmentConfig
-from configs.production import ProductionConfig
+from app.configs.base import Config
+from app.configs.development import DevelopmentConfig
+from app.configs.production import ProductionConfig
 
 from .extensions import db
 from .main import main as main_blueprint
@@ -39,7 +39,7 @@ def create_app():
 
     # Determine which configuration to use based on the FLASK_ENV environment variable.
     # This allows for flexible application behavior depending on the environment it's running in.
-    env = os.getenv("FLASK_ENV", "development")
+    env = os.getenv("FLASK_CONFIG")
     if env == "production":
         # Use production settings for deployment.
         app.config.from_object(ProductionConfig)
