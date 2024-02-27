@@ -9,4 +9,3 @@ dependencies:
   - python-dotenv
   - jsonschema
   - mysql
-prefix: /Users/emma/.local/share/anaconda3/envs/swe_flask
