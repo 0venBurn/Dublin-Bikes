@@ -10,7 +10,6 @@ It performs several key functions as part of the application setup process:
 
 Functions:
     create_app(): Initialises and returns a Flask application instance configured based on the environment.
-
 """
 
 import os

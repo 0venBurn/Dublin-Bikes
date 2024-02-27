@@ -20,7 +20,7 @@ from __future__ import annotations
 import json
 import os
 from datetime import datetime
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import requests
 import sqlalchemy
@@ -37,9 +37,11 @@ from sqlalchemy import (
     Table,
     create_engine,
 )
-from sqlalchemy.engine.base import Engine
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, sessionmaker
+
+if TYPE_CHECKING:
+    from sqlalchemy.engine.base import Engine
 
 # Load .env
 load_dotenv()
@@ -47,7 +49,8 @@ load_dotenv()
 # Set credentials and check for errors
 api_key = os.getenv("URL")
 if api_key is None:
-    raise Exception("Api key not set in .env")
+    msg = "Api key not set in .env"
+    raise Exception(msg)  # noqa: TRY002
 db_username = os.getenv("DB_USERNAME")
 db_password = os.getenv("DB_PASSWORD")
 db = os.getenv("DB")
@@ -61,10 +64,13 @@ def get_data() -> list[dict[str, Any]] | None:
     Returns:
         data: The fetched data if successful, None otherwise.
     """
-    response = requests.get(str(api_key))
+    response = requests.get(str(api_key), timeout=10)
     # Check if HTTP request is OK
-    if response.status_code != 200:
-        raise Exception(f"API request failed: {response.status_code}")
+    http_ok = 200
+
+    if response.status_code != http_ok:
+        msg = f"API request failed: {response.status_code}"
+        raise Exception(msg)  # noqa: TRY002
     try:
         data = json.loads(response.text)
         # json schema to validate loaded json
@@ -112,7 +118,7 @@ def get_data() -> list[dict[str, Any]] | None:
         # Validate json against the schema
         validate(instance=data, schema=schema)
 
-        return data  # type: ignore
+        return data  # type: ignore  # noqa: TRY300, PGH003
 
     # Exception block for possible errors
     except json.JSONDecodeError:
@@ -121,7 +127,7 @@ def get_data() -> list[dict[str, Any]] | None:
     except ValidationError as e:
         print(f"Json validation error as {e}")
         return None
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         print(f"Error fetching data {e}")
         return None
 
@@ -138,8 +144,7 @@ def create_connection() -> Engine | None:
         f"mysql+mysqlconnector://{db_username}:{db_password}@{host}/{db}"
     )
     try:
-        engine = create_engine(connection_string)
-        return engine
+        return create_engine(connection_string)
     except sqlalchemy.exc.OperationalError as e:
         print(f"Error connecting to database: {e}")
         return None
@@ -290,7 +295,7 @@ engine = create_connection()
 # If connection is successful create the tables and create session
 if engine:
     station_table, availability_table = create_tables(engine)
-    session_maker = sessionmaker(bind=engine)  # type: ignore
+    session_maker = sessionmaker(bind=engine)  # type: ignore  # noqa: PGH003
     session = session_maker()
     # If there is data, write it to the station and availability table in db
     if data:
