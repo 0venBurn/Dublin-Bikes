@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dublin Bikes Planner</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/site.css') }}">
+</head>
+<body>
+    <div class="page">
+        <h1>Dublin City Bike Rentals</h1>
+        <p class="intro">The Best Station For You Would Be...</p>
+
+        <div class="parent_container">
+            <div class="station_and_list_container">
+                <div class="table_container">
+                    <table>
+                        <tr>
+                            <td id="stationNameCell">Station Name</td>
+                        </tr>
+                        <tr>
+                            <div id="weather_container">
+                            <td id="temp_div"></td>
+                            </div>
+                        </tr>
+                        <tr>
+                            <td id="availabilityCell">Bike Availability</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="list_container">
+                    <h1>Nearby Stations...</h1>
+                    <ol>
+                        <li>Next Best Station</li>
+                        <li>2nd Next Best Station</li>
+                        <li>3rd Next Best Station</li>
+                        <li>4th Next Best Station</li>
+                        <li>5th Next Best Station</li>
+                    </ol>
+                </div>
+            </div>
+            <div id="map"></div>
+        </div>
+
+        
+
+        <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+        <script async defer src="https://maps.googleapis.com/maps/api/js?key={YOUR API KEY HERE}&callback=initMap"></script>
+    </div>
+</body>
+</html>
