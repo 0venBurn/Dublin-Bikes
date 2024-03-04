@@ -4,7 +4,6 @@ This module defines the Availability model which represents the availability dat
 Classes:
     Availability: A database model representing the real-time availability information of bikes and stands at a station.
 """
-# TODO: Update docstrings to match Evan's descriptions in the scraper files.
 
 from app.extensions import db
 

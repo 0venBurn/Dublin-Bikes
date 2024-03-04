@@ -4,7 +4,6 @@ This module defines the Weather model which represents weather data in the datab
 Classes:
     Weather: A database model representing the weather conditions for a specific date and station.
 """
-# TODO: Update docstrings to match Evan's descriptions in the scraper files.
 
 from app.extensions import db
 
