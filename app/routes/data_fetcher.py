@@ -18,8 +18,11 @@ import logging
 from typing import Any
 
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import aliased, load_only
+from sqlalchemy.sql import func
 
+from app.extensions import db
+from app.models.availability import Availability
 from app.models.station import Station
 from app.models.weather import Weather
 
@@ -32,23 +35,35 @@ def get_latest_weather_data() -> dict[str, Any]:
     database query, it logs the exception and returns an empty dictionary.
 
     Returns:
-        dict[str, Any]: A dictionary containing the latest weather data if
+        dict: A dictionary containing the latest weather data if
         successful, otherwise an empty dictionary.
     """
     try:
-        # Eager loading to optimise query performance by reducing the number of
-        # database hits.
-        # Order by timestamp in descending order to get the most recent weather
-        # data.
-        latest_weather = Weather.query.order_by(Weather.Timestamp.desc()).first()
+        # Use load_only to optimise performance by loading only the necessary
+        # fields.
+        latest_weather = (
+            Weather.query.options(
+                load_only(
+                    Weather.Temperature,
+                    Weather.FeelsLike,
+                    Weather.WeatherCondition,
+                    Weather.WeatherDescription,
+                    Weather.Humidity,
+                    Weather.WindSpeed,
+                    Weather.Visibility,
+                )
+            )
+            .order_by(Weather.Timestamp.desc())
+            .first()
+        )
     except SQLAlchemyError:
         # Log the exception for debugging and maintenance.
-        logging.exception("Error fetching latest weather data")
+        logging.exception("Error fetching latest weather data.")
         return {}
     else:
         if latest_weather:
             # Seperate the general weather info from more specific details for
-            # better readability and organisation.
+            # better readability and organization.
             return {
                 "weather_info": {
                     "Temperature": latest_weather.Temperature,
@@ -74,30 +89,52 @@ def get_stations_data() -> list[dict[str, Any]]:
     during the database query, it logs the exception and returns an empty list.
 
     Returns:
-        list[dict[str, Any]]: A list of dictionaries, each containing data for a
+        list: A list of dictionaries, each containing data for a
         single station, if successful. Otherwise, an empty list.
     """
     try:
-        # Eager loading to optimise query performance by reducing the number of
-        # database hits.
-        # Join the Station and Availability tables to get the latest
-        # availability data for each station.
-        stations = Station.query.options(joinedload(Station.availabilities)).all()  # type: ignore
+        # Use an alias to avoid conflicts in the subquery.
+        latest_availability_alias = aliased(Availability)
+
+        # Subquery to get the latest availability for each station.
+        # Used to join with the stations query to get the latest availability
+        # for each station.
+        # Subquery is used to avoid using a GROUP BY clause in the main query,
+        # which can be slow.
+        latest_availability_subquery = (
+            db.session.query(
+                latest_availability_alias.number,
+                func.max(latest_availability_alias.last_update).label("latest_update"),
+            )
+            .group_by(latest_availability_alias.number)
+            .subquery()
+        )
+
+        # Joining on the subquery ensures we only get the latest availability
+        # for each station, optimizing query time.
+        stations_query = (
+            db.session.query(Station, Availability)
+            .join(Availability, Station.number == Availability.number)
+            .join(
+                latest_availability_subquery,
+                (Station.number == latest_availability_subquery.c.number)
+                & (
+                    Availability.last_update
+                    == latest_availability_subquery.c.latest_update
+                ),
+            )
+        )
+
     except SQLAlchemyError:
         # Log the exception for debugging and maintenance.
-        logging.exception("Error fetching station data")
+        logging.exception("Error fetching stations data.")
         return []
+
     else:
-        stations_data = []
-        for station in stations:
-            # Determine the most recent availability data for accurate,
-            # up-to-date information.
-            # Use the max function with a default value
-            # to handle the case where there is no availability data for a
-            # station.
-            latest_availability = max(
-                station.availabilities, key=lambda a: a.last_update, default=None
-            )
+        stations_with_latest_availability = []
+
+        # Structure data into dictionaries for use by the frontend.
+        for station, availability in stations_query.all():
             station_data = {
                 "station_info": {
                     "number": station.number,
@@ -109,22 +146,14 @@ def get_stations_data() -> list[dict[str, Any]]:
                     "bike_stands": station.bike_stands,
                 },
                 "availability": {
-                    "available_bikes": latest_availability.available_bikes
-                    if latest_availability
-                    else "N/A",
-                    "available_bike_stands": latest_availability.available_bike_stands
-                    if latest_availability
-                    else "N/A",
-                    "status": latest_availability.status
-                    if latest_availability
-                    else "N/A",
-                    # Formatting the last update time for readability
-                    "last_update": latest_availability.last_update.strftime(
+                    "available_bikes": availability.available_bikes,
+                    "available_bike_stands": availability.available_bike_stands,
+                    "status": availability.status,
+                    "last_update": availability.last_update.strftime(
                         "%Y-%m-%d %H:%M:%S"
-                    )
-                    if latest_availability
-                    else "N/A",
+                    ),
                 },
             }
-            stations_data.append(station_data)
-        return stations_data
+            stations_with_latest_availability.append(station_data)
+
+        return stations_with_latest_availability
