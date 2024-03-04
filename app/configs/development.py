@@ -10,5 +10,4 @@ from .base import Config
 class DevelopmentConfig(Config):
     """Development-specific configuration variables."""
 
-    # Example: Enable debug mode in development.
     DEBUG = True

@@ -118,7 +118,7 @@ def get_data() -> list[dict[str, Any]] | None:
         # Validate json against the schema
         validate(instance=data, schema=schema)
 
-        return data  # type: ignore  # noqa: TRY300, PGH003
+        return data  # type: ignore  # noqa: TRY300
 
     # Exception block for possible errors
     except json.JSONDecodeError:
@@ -295,7 +295,7 @@ engine = create_connection()
 # If connection is successful create the tables and create session
 if engine:
     station_table, availability_table = create_tables(engine)
-    session_maker = sessionmaker(bind=engine)  # type: ignore  # noqa: PGH003
+    session_maker = sessionmaker(bind=engine)  # type: ignore
     session = session_maker()
     # If there is data, write it to the station and availability table in db
     if data:

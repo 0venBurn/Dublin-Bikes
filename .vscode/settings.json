@@ -1,0 +1,29 @@
+{
+  // Editor
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+
+  // ESLint
+  "eslint.validate": ["javascript"],
+
+  // CSS
+  "[css]": {
+    "editor.codeActionsOnSave": {
+      "source.fixAll.stylelint": "explicit"
+    }
+  },
+  "css.validate": false,
+  
+  // Python
+  "[python]": {
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "always",
+      "source.organizeImports": "always"
+    },
+    "editor.defaultFormatter": "charliermarsh.ruff"
+  },
+  // Change this to the path of your dmypy executable.
+  "mypy.dmypyExecutable": "/opt/homebrew/bin/dmypy",
+  // Or uncomment this line to use the active Python interpreter.
+  //"mypy.runUsingActiveInterpreter": true,
+}

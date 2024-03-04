@@ -1,4 +1,4 @@
-# Folder Structure  
+# Folder Structure
 
 ## Overview
 
@@ -29,7 +29,7 @@ SWE_Flask_Project/
 ├── docs/ - Documentation for the project.
 │   ├── assets/ - Images and other assets used in the documentation.
 │       └── images/ - Image files used in the documentation.
-│   │   
+│   │
 │   ├── folder_structure.md - Overview of the folder structure.
 │   ├── tools.md - Tools used in the project and their purpose.
 │   └── setup.md - Instructions for setting up the project.

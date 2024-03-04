@@ -15,6 +15,7 @@ Functions:
 import os
 
 from flask import Flask
+from flask_cors import CORS
 
 from app.configs.base import Config
 from app.configs.development import DevelopmentConfig
@@ -48,6 +49,9 @@ def create_app():
     else:
         # Default to base configuration if no environment is specified.
         app.config.from_object(Config)
+
+    # Enable CORS for the entire application.
+    CORS(app)
 
     # Initialise the database connection with the Flask application.
     db.init_app(app)
