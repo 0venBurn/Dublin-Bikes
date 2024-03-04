@@ -6,10 +6,10 @@ exceptions by logging them and returning default empty structures (either
 dictionaries or lists) depending on the function.
 
 Functions:
-    get_latest_weather_data() -> dict[str, Any]:
+    get_latest_weather_data:
         Fetches and returns the latest weather data in a formatted dictionary.
 
-    get_stations_data() -> list[dict[str, Any]]:
+    get_stations_data:
         Fetches and returns a list of dictionaries, each containing data for a
         single station.
 """
@@ -47,7 +47,7 @@ def get_latest_weather_data() -> dict[str, Any]:
         return {}
     else:
         if latest_weather:
-            # Separate the general weather info from more specific details for
+            # Seperate the general weather info from more specific details for
             # better readability and organisation.
             return {
                 "weather_info": {
