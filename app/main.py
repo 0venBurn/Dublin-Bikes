@@ -34,12 +34,11 @@ def index():
 @main.route("/api/weather")  # type: ignore
 def weather_data():
     """Api Endpoint for fetching weather data from database."""
-    data = get_latest_weather_data()
-    return data
+    return get_latest_weather_data()
 
 
 @main.route("/api/stations")
 def stations_data():
     """API endpoint for fetching recent station data from database."""
-    data = get_stations_data()
-    return data
+    return get_stations_data()
+
