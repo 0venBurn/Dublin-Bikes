@@ -41,4 +41,3 @@ def weather_data():
 def stations_data():
     """API endpoint for fetching recent station data from database."""
     return get_stations_data()
-

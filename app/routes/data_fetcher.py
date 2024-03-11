@@ -70,19 +70,21 @@ def get_latest_weather_data():
             # Separate the general weather info from more specific details for
             # better readability and organization.
             if latest_weather:
-                return json.dumps({
-                    "weather_info": {
-                        "Temperature": float(latest_weather.Temperature),
-                        "FeelsLike": float(latest_weather.FeelsLike),
-                        "Condition": latest_weather.WeatherCondition,
-                        "Description": latest_weather.WeatherDescription,
-                    },
-                    "details": {
-                        "Humidity": float(latest_weather.Humidity),
-                        "WindSpeed": float(latest_weather.WindSpeed),
-                        "Visibility": float(latest_weather.Visibility),
-                    },
-                })
+                return json.dumps(
+                    {
+                        "weather_info": {
+                            "Temperature": float(latest_weather.Temperature),
+                            "FeelsLike": float(latest_weather.FeelsLike),
+                            "Condition": latest_weather.WeatherCondition,
+                            "Description": latest_weather.WeatherDescription,
+                        },
+                        "details": {
+                            "Humidity": float(latest_weather.Humidity),
+                            "WindSpeed": float(latest_weather.WindSpeed),
+                            "Visibility": float(latest_weather.Visibility),
+                        },
+                    }
+                )
             return json.dumps({})
 
 

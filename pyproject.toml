@@ -55,10 +55,10 @@ select = [
   "PIE",   # flake8-pie
   "PL",    # pylint
   "PTH",   # flake8-use-pathlib
-  "Q",     # flake8-quotes 
+  "Q",     # flake8-quotes
   "RET",   # flake8-return
   "RSE",   # flake8-raise
-  "RUF",   # Ruff-specific 
+  "RUF",   # Ruff-specific
   "S",     # flake8-bandit
   "SIM",   # flake8-simplify
   "SLF",   # flake8-self

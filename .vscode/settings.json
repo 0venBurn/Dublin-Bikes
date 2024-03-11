@@ -13,7 +13,7 @@
     }
   },
   "css.validate": false,
-  
+
   // Python
   "[python]": {
     "editor.codeActionsOnSave": {
