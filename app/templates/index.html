@@ -44,11 +44,6 @@
                 <div id="map"></div>
             </div>
         </div>
-
-        <script>
-            var weatherData = {{ weather | tojson | safe }};
-            var stationsData = {{ stations | tojson | safe }};
-        </script>
         <script
             type="module"
             src="{{ url_for('static', filename='js/main.js') }}"

@@ -14,8 +14,8 @@ Functions:
         single station.
 """
 
+import json
 import logging
-from typing import Any
 
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import aliased, load_only
@@ -27,7 +27,12 @@ from app.models.station import Station
 from app.models.weather import Weather
 
 
-def get_latest_weather_data() -> dict[str, Any]:
+def serialize_datetime(dt):
+    """Helper function to serialize datetime objects to a JSON-friendly format."""
+    return dt.strftime("%Y-%m-%d %H:%M:%S") if dt else None
+
+
+def get_latest_weather_data():
     """Fetches the latest weather data from the database.
 
     This function queries the database for the most recent weather data entry,
@@ -62,25 +67,26 @@ def get_latest_weather_data() -> dict[str, Any]:
         return {}
     else:
         if latest_weather:
-            # Seperate the general weather info from more specific details for
+            # Separate the general weather info from more specific details for
             # better readability and organization.
-            return {
-                "weather_info": {
-                    "Temperature": latest_weather.Temperature,
-                    "FeelsLike": latest_weather.FeelsLike,
-                    "Condition": latest_weather.WeatherCondition,
-                    "Description": latest_weather.WeatherDescription,
-                },
-                "details": {
-                    "Humidity": latest_weather.Humidity,
-                    "WindSpeed": latest_weather.WindSpeed,
-                    "Visibility": latest_weather.Visibility,
-                },
-            }
-        return {}
+            if latest_weather:
+                return json.dumps({
+                    "weather_info": {
+                        "Temperature": float(latest_weather.Temperature),
+                        "FeelsLike": float(latest_weather.FeelsLike),
+                        "Condition": latest_weather.WeatherCondition,
+                        "Description": latest_weather.WeatherDescription,
+                    },
+                    "details": {
+                        "Humidity": float(latest_weather.Humidity),
+                        "WindSpeed": float(latest_weather.WindSpeed),
+                        "Visibility": float(latest_weather.Visibility),
+                    },
+                })
+            return json.dumps({})
 
 
-def get_stations_data() -> list[dict[str, Any]]:
+def get_stations_data():
     """Fetches data for all stations from the database.
 
     This function queries the database for all station entries, including their
@@ -132,8 +138,6 @@ def get_stations_data() -> list[dict[str, Any]]:
 
     else:
         stations_with_latest_availability = []
-
-        # Structure data into dictionaries for use by the frontend.
         for station, availability in stations_query.all():
             station_data = {
                 "station_info": {
@@ -149,11 +153,9 @@ def get_stations_data() -> list[dict[str, Any]]:
                     "available_bikes": availability.available_bikes,
                     "available_bike_stands": availability.available_bike_stands,
                     "status": availability.status,
-                    "last_update": availability.last_update.strftime(
-                        "%Y-%m-%d %H:%M:%S"
-                    ),
+                    "last_update": serialize_datetime(availability.last_update),
                 },
             }
             stations_with_latest_availability.append(station_data)
 
-        return stations_with_latest_availability
+        return json.dumps(stations_with_latest_availability)
