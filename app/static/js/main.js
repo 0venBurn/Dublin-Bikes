@@ -1,3 +1,5 @@
+let stationsData; //stationsData needed to be created to later be assigned to
+
 // Function to fetch weather data
 async function fetchWeatherData() {
   try {
@@ -18,7 +20,10 @@ async function fetchStationData() {
       },
     });
     const data = await response.json();
+    stationsData = data; //data from station api is assigned to the stationsData variable
     console.log("Station Data", data);
+
+    initMap();
   } catch (error) {
     console.error("Error fetching station data:", error);
   }
@@ -94,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
       center: location,
     });
 
-    stationsData.forEach((station) => {
+    stationsData.forEach((station) => { //stationsData now has station values
       const marker = createMarker(station, map);
       addMarkerClickListener(marker, station);
     });
