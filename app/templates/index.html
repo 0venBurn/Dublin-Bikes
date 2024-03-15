@@ -12,6 +12,8 @@
     </head>
     <body>
         <div class="page">
+            <input id="pac-input" class="controls" type="text" placeholder="Search Box">
+
             <h1>Dublin Bikes Availability</h1>
             <p class="intro">The Best Station For You Would Be...</p>
 
@@ -51,7 +53,7 @@
         <script
             async
             defer
-            src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&callback=initMap"
+            src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&libraries=places,geometry&callback=initMap"
         ></script>
     </body>
 </html>
