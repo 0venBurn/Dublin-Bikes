@@ -1,5 +1,6 @@
 let stationsData; //stationsData needed to be created to later be assigned to
-let markers = []; //markers for searchbox to place them in
+let startMarkers = []; //markers for searchbox to place them in
+let endMarkers = [];
 
 
 // Function to fetch weather data
@@ -44,6 +45,15 @@ setInterval(fetchWeatherData, 1800000); // Fetch weather data every 30 minutes (
 /* global google, weatherData, stationsData */
 
 document.addEventListener('DOMContentLoaded', () => {
+
+    // create search boxes for start and end location outside of initMap so they stay after refresh
+    const start_input = document.getElementById('start-input');
+    const startSearchBox = new google.maps.places.SearchBox(start_input);
+
+    const end_input = document.getElementById('end-input');
+    const endSearchBox = new google.maps.places.SearchBox(end_input);
+
+
   // Set zoom level for map to ensure a city-wide view.
   const ZOOM_LEVEL = 13;
 
@@ -89,82 +99,97 @@ document.addEventListener('DOMContentLoaded', () => {
   /**
    * Initialises the Google Maps map and adds markers for each station.
    */
-window.initMap = function initMap() {
-    // Ensure the Google Maps API is loaded before attempting to initialise the map.
+  window.initMap = function initMap() {
+    // Ensure the Google Maps API is loaded before attempting to initialize the map.
     if (typeof google === 'undefined') {
       console.error('Google Maps API is not loaded.');
       return;
     }
   
-    // Central location of Dublin to center the map on.
+    // Central location of Dublin to centre the map on.
     const location = { lat: 53.349804, lng: -6.26031 };
     const map = new google.maps.Map(document.getElementById('map'), {
       zoom: ZOOM_LEVEL,
       center: location,
     });
 
-    // Create the search box and link it to the UI element.
-    const input = document.getElementById('pac-input');
-    const searchBox = new google.maps.places.SearchBox(input);
-    map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+    // Add search boxes to map controls, start and end have different functionality
+    //map.controls[google.maps.ControlPosition.TOP_LEFT].push(start_input);
+    //map.controls[google.maps.ControlPosition.TOP_LEFT].push(end_input);
 
     // Bias the SearchBox results towards current map's viewport.
     map.addListener('bounds_changed', () => {
-      searchBox.setBounds(map.getBounds());
+      startSearchBox.setBounds(map.getBounds());
+      endSearchBox.setBounds(map.getBounds());
     });
 
-    // Listen for the event when user selects prediction
-    searchBox.addListener('places_changed', () => {
-      const places = searchBox.getPlaces();
+    // Listen for the event when user selects prediction for start location
+    startSearchBox.addListener('places_changed', () => {
+      const places = startSearchBox.getPlaces();
 
       if (places.length == 0) {
         return;
       }
 
-      // Clear out the old markers.
-      markers.forEach((marker) => {
+      // Clear out the old markers in start location
+      startMarkers.forEach((marker) => {
         marker.setMap(null);
       });
-      markers = [];
+      startMarkers = [];
 
-      // For each place, get the icon, name and location.
-      const bounds = new google.maps.LatLngBounds();
+      // For each place, create a marker.
       places.forEach((place) => {
         if (!place.geometry) {
           console.log("Returned place contains no geometry");
           return;
         }
-        const icon = {
-          url: place.icon,
-          size: new google.maps.Size(71, 71),
-          origin: new google.maps.Point(0, 0),
-          anchor: new google.maps.Point(17, 34),
-          scaledSize: new google.maps.Size(25, 25),
-        };
-
-        // Create a marker for each place.
-        markers.push(
+        startMarkers.push(
           new google.maps.Marker({
             map,
-            icon,
             title: place.name,
             position: place.geometry.location,
           })
         );
-
-        if (place.geometry.viewport) {
-          // Only geocodes have viewport.
-          bounds.union(place.geometry.viewport);
-        } else {
-          bounds.extend(place.geometry.location);
-        }
       });
-      map.fitBounds(bounds);
     });
 
+    // Listen for the event when user selects prediction for end location
+    endSearchBox.addListener('places_changed', () => {
+      const places = endSearchBox.getPlaces();
+
+      if (places.length == 0) {
+        return;
+      }
+
+      // Clear out the old markers in end location
+      endMarkers.forEach((marker) => {
+        marker.setMap(null);
+      });
+      endMarkers = [];
+
+      // For each place, create a marker.
+      places.forEach((place) => {
+        if (!place.geometry) {
+          console.log("Returned place contains no geometry");
+          return;
+        }
+        endMarkers.push(
+          new google.maps.Marker({
+            map,
+            title: place.name,
+            position: place.geometry.location,
+          })
+        );
+      });
+    });
+
+    // Render markers for existing stationsData
     stationsData.forEach((station) => {
       const marker = createMarker(station, map);
       addMarkerClickListener(marker, station);
     });
-};
+    //position the search boxes outside of the map div
+    document.getElementById("page").appendChild(start_input);
+    document.getElementById("page").appendChild(end_input);
+  };
 });
