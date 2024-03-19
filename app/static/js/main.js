@@ -3,6 +3,7 @@ let startMarkers = []; //markers for searchbox to place them in
 let endMarkers = [];
 
 
+
 // Function to fetch weather data
 async function fetchWeatherData() {
   try {
@@ -32,6 +33,7 @@ async function fetchStationData() {
     console.error("Error fetching station data:", error);
   }
 }
+
 
 
 // Fetch station data initially
@@ -113,6 +115,25 @@ document.addEventListener('DOMContentLoaded', () => {
       center: location,
     });
 
+    let usableArea = new google.maps.Polygon({
+    paths: [
+        {lat:53.3726786, lng:-6.1668567},
+        {lat:53.3882428, lng:-6.2465650},
+        {lat:53.3775942, lng:-6.3386417},
+        {lat:53.3521908, lng:-6.3716244},
+        {lat:53.3218507, lng:-6.3262732},
+        {lat:53.3169287, lng:-6.2472521},
+        {lat:53.3275924, lng:-6.1716667},
+        {lat:53.3726786, lng:-6.1668567},
+    ],
+    strokeColor: '#FF0000',
+    strokeOpacity: 0,
+    strokeWeight: 2,
+    fillColor: '#FF0000',
+    fillOpacity: 0,
+    map: map
+    });
+
     // Add search boxes to map controls, start and end have different functionality
     //map.controls[google.maps.ControlPosition.TOP_LEFT].push(start_input);
     //map.controls[google.maps.ControlPosition.TOP_LEFT].push(end_input);
@@ -123,64 +144,64 @@ document.addEventListener('DOMContentLoaded', () => {
       endSearchBox.setBounds(map.getBounds());
     });
 
-    // Listen for the event when user selects prediction for start location
+//function to handle if location is inside the bounds of polygon
+function handleLocationSelection(place, isStartLocation) {
+  //check if inside polygon
+  if (google.maps.geometry.poly.containsLocation(place.geometry.location, usableArea)) {
+    //clear previous markers based on if start(true) or end (false)
+    if (isStartLocation) {
+      startMarkers.forEach((marker) => {
+        marker.setMap(null);
+      });
+      startMarkers = [];
+    } else {
+      endMarkers.forEach((marker) => {
+        marker.setMap(null);
+      });
+      endMarkers = [];
+    }
+
+    //create a marker at the selected place
+    var marker = new google.maps.Marker({
+      position: place.geometry.location,
+      map: map
+    });
+    map.setCenter(place.geometry.location);
+
+    
+    if (isStartLocation) {
+      startMarkers.push(marker);
+    } else {
+      endMarkers.push(marker);
+    }
+  } else {
+    // If outside, show a message or take appropriate action
+    alert('Location can only be set inside Dublin City.');
+    return;
+  }
+}
+
+
+    
     startSearchBox.addListener('places_changed', () => {
       const places = startSearchBox.getPlaces();
 
       if (places.length == 0) {
         return;
       }
+      handleLocationSelection(places[0], true);
 
-      // Clear out the old markers in start location
-      startMarkers.forEach((marker) => {
-        marker.setMap(null);
-      });
-      startMarkers = [];
-
-      // For each place, create a marker.
-      places.forEach((place) => {
-        if (!place.geometry) {
-          console.log("Returned place contains no geometry");
-          return;
-        }
-        startMarkers.push(
-          new google.maps.Marker({
-            map,
-            title: place.name,
-            position: place.geometry.location,
-          })
-        );
-      });
     });
 
-    // Listen for the event when user selects prediction for end location
+    
     endSearchBox.addListener('places_changed', () => {
       const places = endSearchBox.getPlaces();
 
       if (places.length == 0) {
         return;
       }
+    handleLocationSelection(places[0], false);
 
-      // Clear out the old markers in end location
-      endMarkers.forEach((marker) => {
-        marker.setMap(null);
-      });
-      endMarkers = [];
-
-      // For each place, create a marker.
-      places.forEach((place) => {
-        if (!place.geometry) {
-          console.log("Returned place contains no geometry");
-          return;
-        }
-        endMarkers.push(
-          new google.maps.Marker({
-            map,
-            title: place.name,
-            position: place.geometry.location,
-          })
-        );
-      });
     });
 
     // Render markers for existing stationsData
