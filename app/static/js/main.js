@@ -1,7 +1,8 @@
 let stationsData; //stationsData needed to be created to later be assigned to
 let startMarkers = []; //markers for searchbox to place them in
 let endMarkers = [];
-
+let directionsService = new google.maps.DirectionsService();
+let directionsRenderer;
 
 
 // Function to fetch weather data
@@ -115,6 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
       center: location,
     });
 
+
     let usableArea = new google.maps.Polygon({
     paths: [
         {lat:53.3726786, lng:-6.1668567},
@@ -212,5 +214,29 @@ function handleLocationSelection(place, isStartLocation) {
     //position the search boxes outside of the map div
     document.getElementById("page").appendChild(start_input);
     document.getElementById("page").appendChild(end_input);
+
+    //assigned inside of initMap to get the map values
+    directionsRenderer = new google.maps.DirectionsRenderer();
+    directionsRenderer.setMap(map);
+
   };
+
+    function calcRoute(){
+      var source = startMarkers[0].getPosition(); //getPosition used because source and dest need long/lat values
+      var dest = endMarkers[0].getPosition();
+
+      let request = {
+        origin: source,
+        destination: dest,
+        travelMode: 'WALKING',
+      }
+
+      directionsService.route(request, function(result, status){
+        if(status == "OK"){
+          directionsRenderer.setDirections(result)
+        }
+      });
+    }
+    const button = document.getElementById("goButton");
+    button.onclick = calcRoute;
 });
