@@ -1,7 +1,7 @@
 let stationsData; //stationsData needed to be created to later be assigned to
 let startMarkers = []; //markers for searchbox to place them in
 let endMarkers = [];
-let directionsService = new google.maps.DirectionsService();
+let directionsService;
 let directionsRenderer;
 
 
@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
       stationNameCell.innerHTML = name;
       availabilityCell.innerHTML = `Available stands: ${availability.available_bike_stands}<br>Available bikes: ${availability.available_bikes}`;
       const roundedTemp = Math.round(weatherData.weather_info.Temperature);
-      tempDiv.innerHTML = `Temperature: ${roundedTemp}°C<br>Condition: ${weatherData.weather_info.Condition}`;
+      tempDiv.innerHTML = `Temperature: ${roundedTemp}Â°C<br>Condition: ${weatherData.weather_info.Condition}`;
     });
   }
 
@@ -116,6 +116,9 @@ document.addEventListener('DOMContentLoaded', () => {
       center: location,
     });
 
+        directionsService = new google.maps.DirectionsService();
+        directionsRenderer = new google.maps.DirectionsRenderer();
+        directionsRenderer.setMap(map);
 
     let usableArea = new google.maps.Polygon({
     paths: [
@@ -155,12 +158,12 @@ function handleLocationSelection(place, isStartLocation) {
       startMarkers.forEach((marker) => {
         marker.setMap(null);
       });
-      startMarkers = [];
+      //startMarkers = [];
     } else {
       endMarkers.forEach((marker) => {
         marker.setMap(null);
       });
-      endMarkers = [];
+      //endMarkers = [];
     }
 
     //create a marker at the selected place
@@ -216,26 +219,53 @@ function handleLocationSelection(place, isStartLocation) {
     document.getElementById("page").appendChild(end_input);
 
     //assigned inside of initMap to get the map values
-    directionsRenderer = new google.maps.DirectionsRenderer();
-    directionsRenderer.setMap(map);
+    //directionsRenderer = new google.maps.directionsRenderer();
+    //directionsRenderer.setMap(map);
+
+    
 
   };
-
+  
     function calcRoute(){
       var source = startMarkers[0].getPosition(); //getPosition used because source and dest need long/lat values
       var dest = endMarkers[0].getPosition();
+      //var source = {lat: 53.3498, lng: -6.2603};
+      //var dest = {lat: 56.3498, lng: -6.2603};
 
       let request = {
         origin: source,
         destination: dest,
         travelMode: 'WALKING',
       }
-
+    
       directionsService.route(request, function(result, status){
         if(status == "OK"){
           directionsRenderer.setDirections(result)
+        } else {
+            window.alert('Directions request failed');
         }
       });
+      //best choice for start and end stations
+      var bestStart = findClosestStation(source);
+      var bestEnd = findClosestStation(dest);
+    }
+
+      function findClosestStation(location) {
+      let closestStation;
+      let closestDistance = Infinity;
+
+    //function for finding closest station by iterating over StationsData (WIP)
+      stationsData.forEach(station => {
+          const stationLocation = new google.maps.LatLng(station.latitude, station.longitude);
+          const distance = google.maps.geometry.spherical.calcDistanceBetween(location, stationLocation);
+        
+          if (distance < closestDistance) {
+              closestDistance = distance;
+              closestStation = station;
+          }
+      });
+
+      return closestStation;
     }
     const button = document.getElementById("goButton");
     button.onclick = calcRoute;
