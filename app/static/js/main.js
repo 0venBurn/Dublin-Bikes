@@ -41,7 +41,7 @@ async function fetchStationData() {
 fetchStationData();
 fetchWeatherData();
 // Set interval to fetch station data every 5 minutes (300,000 milliseconds)
-setInterval(fetchStationData, 300000); // Fetch station data every 5 minutes (300,000 milliseconds)
+//setInterval(fetchStationData, 300000); // Fetch station data every 5 minutes (300,000 milliseconds)
 setInterval(fetchWeatherData, 1800000); // Fetch weather data every 30 minutes (1,800,000 milliseconds)
 
 /* eslint-disable no-console */
