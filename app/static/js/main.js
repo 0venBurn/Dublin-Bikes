@@ -1,8 +1,13 @@
 let stationsData; //stationsData needed to be created to later be assigned to
 let startMarkers = []; //markers for searchbox to place them in
 let endMarkers = [];
-let directionsService;
-let directionsRenderer;
+let directionsService1;
+let directionsRenderer1;
+let directionsService2;
+let directionsRenderer2;
+let directionsService3;
+let directionsRenderer3;
+let stationsDataList = [];
 
 
 // Function to fetch weather data
@@ -27,6 +32,15 @@ async function fetchStationData() {
     const data = await response.json();
     stationsData = data; //data from station api is assigned to the stationsData variable
     console.log("Station Data", data);
+
+
+    stationsDataList = data.map(station => ({
+    latitude: station.station_info.latitude,
+    longitude: station.station_info.longitude,
+    name: station.station_info.name,
+    availability: station.availability
+    }));
+
 
     // Call initMap after stationsData is populated
     initMap();
@@ -116,9 +130,17 @@ document.addEventListener('DOMContentLoaded', () => {
       center: location,
     });
 
-        directionsService = new google.maps.DirectionsService();
-        directionsRenderer = new google.maps.DirectionsRenderer();
-        directionsRenderer.setMap(map);
+        directionsService1 = new google.maps.DirectionsService();
+        directionsRenderer1 = new google.maps.DirectionsRenderer();
+        directionsRenderer1.setMap(map);
+
+        directionsService2 = new google.maps.DirectionsService();
+        directionsRenderer2 = new google.maps.DirectionsRenderer();
+        directionsRenderer2.setMap(map);
+
+        directionsService3 = new google.maps.DirectionsService();
+        directionsRenderer3 = new google.maps.DirectionsRenderer();
+        directionsRenderer3.setMap(map);
 
     let usableArea = new google.maps.Polygon({
     paths: [
@@ -225,48 +247,88 @@ function handleLocationSelection(place, isStartLocation) {
     
 
   };
-  
-    function calcRoute(){
-      var source = startMarkers[0].getPosition(); //getPosition used because source and dest need long/lat values
-      var dest = endMarkers[0].getPosition();
-      //var source = {lat: 53.3498, lng: -6.2603};
-      //var dest = {lat: 56.3498, lng: -6.2603};
 
-      let request = {
-        origin: source,
-        destination: dest,
-        travelMode: 'WALKING',
+function calcRoute() {
+  // Get the coordinates of the start location and the best start station
+  var startLocation = startMarkers[0].getPosition();
+  var endLocation = endMarkers[0].getPosition();
+  var bestStartStation = findClosestStation(startLocation);
+  var bestEndStation = findClosestStation(endLocation);
+
+  // Check if both startLocation and bestStartStation are available
+  if (startLocation && bestStartStation && endLocation && bestEndStation) {
+    // Create the request for the Directions Service
+    var request1 = {
+      origin: startLocation,
+      destination: new google.maps.LatLng(bestStartStation.latitude, bestStartStation.longitude),
+      travelMode: 'WALKING'
+    };
+    var request2 = {
+    origin: endLocation,
+    destination: new google.maps.LatLng(bestEndStation.latitude, bestEndStation.longitude),
+    travelMode: 'WALKING'
+    };
+
+
+    // Call the Directions Service to calculate the first route
+    directionsService1.route(request1, function(response1, status1) {
+      if (status1 === 'OK') {
+        // Display the first route on the map using the Directions Renderer
+        directionsRenderer1.setDirections(response1);
+
+        // Call the Directions Service to calculate the second route
+        directionsService2.route(request2, function(response2, status2) {
+          if (status2 === 'OK') {
+            // Display the second route on the map using the Directions Renderer
+            directionsRenderer2.setDirections(response2);
+
+            // Create the request for the third route
+            var request3 = {
+              origin: response1.routes[0].legs[0].start_location,
+              destination: response2.routes[0].legs[0].end_location,
+              travelMode: 'BICYCLING'
+            };
+
+            // Call the Directions Service to calculate the third route
+            directionsService3.route(request3, function(response3, status3) {
+              if (status3 === 'OK') {
+                // Display the third route on the map using the Directions Renderer
+                directionsRenderer3.setDirections(response3);
+              } else {
+                window.alert('Directions request failed due to ' + status3);
+              }
+            });
+          } else {
+            window.alert('Directions request failed due to ' + status2);
+          }
+        });
+      } else {
+        window.alert('Directions request failed due to ' + status1);
       }
-    
-      directionsService.route(request, function(result, status){
-        if(status == "OK"){
-          directionsRenderer.setDirections(result)
-        } else {
-            window.alert('Directions request failed');
-        }
-      });
-      //best choice for start and end stations
-      var bestStart = findClosestStation(source);
-      var bestEnd = findClosestStation(dest);
-    }
+    });
+  } else {
+    window.alert('Start location, end location, best start station, or best end station is not available.');
+  }
+}
 
       function findClosestStation(location) {
       let closestStation;
       let closestDistance = Infinity;
 
-    //function for finding closest station by iterating over StationsData (WIP)
-      stationsData.forEach(station => {
-          const stationLocation = new google.maps.LatLng(station.latitude, station.longitude);
-          const distance = google.maps.geometry.spherical.calcDistanceBetween(location, stationLocation);
-        
-          if (distance < closestDistance) {
-              closestDistance = distance;
-              closestStation = station;
-          }
-      });
+      stationsDataList.forEach(station => {
+        const stationLocation = new google.maps.LatLng(station.latitude, station.longitude);
+        const distance = google.maps.geometry.spherical.computeDistanceBetween(location, stationLocation);
+
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestStation = station;
+        }
+     });
 
       return closestStation;
-    }
+      }
+
     const button = document.getElementById("goButton");
+    //button.onclick = fundClosestStation;
     button.onclick = calcRoute;
 });
