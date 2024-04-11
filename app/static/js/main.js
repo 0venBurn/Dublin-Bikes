@@ -89,6 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
       position: { lat: latitude, lng: longitude },
       map,
       title: name,
+      opacity: 0.75
     });
   }
 
@@ -130,17 +131,50 @@ document.addEventListener('DOMContentLoaded', () => {
       center: location,
     });
 
-        directionsService1 = new google.maps.DirectionsService();
-        directionsRenderer1 = new google.maps.DirectionsRenderer();
-        directionsRenderer1.setMap(map);
+  directionsService1 = new google.maps.DirectionsService();
+  directionsRenderer1 = new google.maps.DirectionsRenderer({
+    markerOptions: {
+      icon: {
+        // Set custom icon for both A and B markers
+        url: 'https://i.ibb.co/5x0f0Sw/markerA.png',
+        scaledSize: new google.maps.Size(32, 32),
+        origin: new google.maps.Point(0, 0), //origin point of the icon, 0,0 is the top-left corner
+        anchor: new google.maps.Point(16, 32), //anchor point of the icon, 16,32 is centre of the icon
+        interactive: false
+      }
+    }
+  });
+  directionsRenderer1.setMap(map);
 
-        directionsService2 = new google.maps.DirectionsService();
-        directionsRenderer2 = new google.maps.DirectionsRenderer();
-        directionsRenderer2.setMap(map);
+  directionsService2 = new google.maps.DirectionsService();
+  directionsRenderer2 = new google.maps.DirectionsRenderer({
+    markerOptions: {
+      icon: {
+        // Set custom icon for both A and B markers
+        url: 'https://i.ibb.co/5x0f0Sw/markerA.png',
+        scaledSize: new google.maps.Size(32, 32),
+        origin: new google.maps.Point(0, 0),
+        anchor: new google.maps.Point(16, 32),
+        interactive: false
+      }
+    }
+  });
+  directionsRenderer2.setMap(map);
 
-        directionsService3 = new google.maps.DirectionsService();
-        directionsRenderer3 = new google.maps.DirectionsRenderer();
-        directionsRenderer3.setMap(map);
+  directionsService3 = new google.maps.DirectionsService();
+  directionsRenderer3 = new google.maps.DirectionsRenderer({
+    markerOptions: {
+      icon: {
+        url: 'https://i.ibb.co/5x0f0Sw/markerA.png',
+        scaledSize: new google.maps.Size(32, 32),
+        origin: new google.maps.Point(0, 0),
+        anchor: new google.maps.Point(16, 32),
+        interactive: false
+      }
+    }
+  });
+  directionsRenderer3.setMap(map);
+
 
     let usableArea = new google.maps.Polygon({
     paths: [
@@ -161,9 +195,6 @@ document.addEventListener('DOMContentLoaded', () => {
     map: map
     });
 
-    // Add search boxes to map controls, start and end have different functionality
-    //map.controls[google.maps.ControlPosition.TOP_LEFT].push(start_input);
-    //map.controls[google.maps.ControlPosition.TOP_LEFT].push(end_input);
 
     // Bias the SearchBox results towards current map's viewport.
     map.addListener('bounds_changed', () => {
@@ -188,10 +219,17 @@ function handleLocationSelection(place, isStartLocation) {
       //endMarkers = [];
     }
 
+      const markerIcon = {
+      url: isStartLocation ? 'https://maps.google.com/mapfiles/ms/icons/green-dot.png' : 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png',
+      scaledSize: new google.maps.Size(32, 32), 
+      origin: new google.maps.Point(0, 0),
+      anchor: new google.maps.Point(16, 32)
+    };
     //create a marker at the selected place
     var marker = new google.maps.Marker({
       position: place.geometry.location,
-      map: map
+      map: map,
+      icon: markerIcon
     });
     map.setCenter(place.geometry.location);
 
@@ -239,19 +277,16 @@ function handleLocationSelection(place, isStartLocation) {
     //position the search boxes outside of the map div
     document.getElementById("page").appendChild(start_input);
     document.getElementById("page").appendChild(end_input);
-
-    //assigned inside of initMap to get the map values
-    //directionsRenderer = new google.maps.directionsRenderer();
-    //directionsRenderer.setMap(map);
-
-    
-
   };
 
 function calcRoute() {
+
+  directionsRenderer1.setDirections({ routes: [] });
+  directionsRenderer2.setDirections({ routes: [] });
+  directionsRenderer3.setDirections({ routes: [] });
   // Get the coordinates of the start location and the best start station
-  var startLocation = startMarkers[0].getPosition();
-  var endLocation = endMarkers[0].getPosition();
+  var startLocation = startSearchBox.getPlaces()[0].geometry.location;
+  var endLocation = endSearchBox.getPlaces()[0].geometry.location;
   var bestStartStation = findClosestStation(startLocation);
   var bestEndStation = findClosestStation(endLocation);
 
@@ -269,30 +304,24 @@ function calcRoute() {
     travelMode: 'WALKING'
     };
 
-
-    // Call the Directions Service to calculate the first route
     directionsService1.route(request1, function(response1, status1) {
       if (status1 === 'OK') {
-        // Display the first route on the map using the Directions Renderer
-        directionsRenderer1.setDirections(response1);
+         directionsRenderer1.setDirections(response1);
 
-        // Call the Directions Service to calculate the second route
+        
         directionsService2.route(request2, function(response2, status2) {
           if (status2 === 'OK') {
-            // Display the second route on the map using the Directions Renderer
-            directionsRenderer2.setDirections(response2);
+             directionsRenderer2.setDirections(response2);
 
-            // Create the request for the third route
+            
             var request3 = {
               origin: response1.routes[0].legs[0].start_location,
               destination: response2.routes[0].legs[0].end_location,
               travelMode: 'BICYCLING'
             };
 
-            // Call the Directions Service to calculate the third route
             directionsService3.route(request3, function(response3, status3) {
               if (status3 === 'OK') {
-                // Display the third route on the map using the Directions Renderer
                 directionsRenderer3.setDirections(response3);
               } else {
                 window.alert('Directions request failed due to ' + status3);
@@ -329,6 +358,5 @@ function calcRoute() {
       }
 
     const button = document.getElementById("goButton");
-    //button.onclick = fundClosestStation;
     button.onclick = calcRoute;
 });
