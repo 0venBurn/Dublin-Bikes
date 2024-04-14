@@ -17,6 +17,24 @@
             <input id="end-input" class="controls" type="text" placeholder="End Location">
             <button id="goButton">Route</button>
 
+            <form action="/predict" method="post">
+                <label for = "date">Date:</label>
+                <select id="date">
+                    <!-- JS insertions -->
+                </select>
+                <label for = "time">Time:</label>
+                <select id="time">
+                    <!-- JS insertions -->
+                </select>
+                <label for = "station">Station:</label>
+                <select id="station">
+                    <!-- JS insertions -->
+                </select>
+                <button type = "submit">Predict</button>
+            </form>
+
+
+
             <h1>Dublin Bikes Availability</h1>
             <p class="intro">The Best Station For You Would Be...</p>
 

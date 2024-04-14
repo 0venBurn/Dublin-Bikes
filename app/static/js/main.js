@@ -10,6 +10,8 @@ let directionsRenderer3;
 let stationsDataList = [];
 
 
+
+
 // Function to fetch weather data
 async function fetchWeatherData() {
   try {
@@ -26,7 +28,6 @@ async function fetchStationData() {
     const response = await fetch("/api/stations", {
       headers: {
         "Content-Type": "application/json",
-        // Additional headers here
       },
     });
     const data = await response.json();
@@ -39,7 +40,16 @@ async function fetchStationData() {
     longitude: station.station_info.longitude,
     name: station.station_info.name,
     availability: station.availability
+
     }));
+    const stationDropdown = document.getElementById('station');
+     stationsDataList.forEach(station => {
+            const option = document.createElement('option');
+            option.value = station.id; // Set value to station name or any unique identifier
+            option.textContent = station.name; // Display text as station name
+            stationDropdown.appendChild(option);
+        });
+
 
 
     // Call initMap after stationsData is populated
@@ -62,7 +72,6 @@ setInterval(fetchWeatherData, 1800000); // Fetch weather data every 30 minutes (
 /* global google, weatherData, stationsData */
 
 document.addEventListener('DOMContentLoaded', () => {
-
     // create search boxes for start and end location outside of initMap so they stay after refresh
     const start_input = document.getElementById('start-input');
     const startSearchBox = new google.maps.places.SearchBox(start_input);
@@ -123,7 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
       console.error('Google Maps API is not loaded.');
       return;
     }
-  
+
     // Central location of Dublin to centre the map on.
     const location = { lat: 53.349804, lng: -6.26031 };
     const map = new google.maps.Map(document.getElementById('map'), {
@@ -221,7 +230,7 @@ function handleLocationSelection(place, isStartLocation) {
 
       const markerIcon = {
       url: isStartLocation ? 'https://maps.google.com/mapfiles/ms/icons/green-dot.png' : 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png',
-      scaledSize: new google.maps.Size(32, 32), 
+      scaledSize: new google.maps.Size(32, 32),
       origin: new google.maps.Point(0, 0),
       anchor: new google.maps.Point(16, 32)
     };
@@ -233,7 +242,7 @@ function handleLocationSelection(place, isStartLocation) {
     });
     map.setCenter(place.geometry.location);
 
-    
+
     if (isStartLocation) {
       startMarkers.push(marker);
     } else {
@@ -247,7 +256,7 @@ function handleLocationSelection(place, isStartLocation) {
 }
 
 
-    
+
     startSearchBox.addListener('places_changed', () => {
       const places = startSearchBox.getPlaces();
 
@@ -258,7 +267,7 @@ function handleLocationSelection(place, isStartLocation) {
 
     });
 
-    
+
     endSearchBox.addListener('places_changed', () => {
       const places = endSearchBox.getPlaces();
 
@@ -308,12 +317,12 @@ function calcRoute() {
       if (status1 === 'OK') {
          directionsRenderer1.setDirections(response1);
 
-        
+
         directionsService2.route(request2, function(response2, status2) {
           if (status2 === 'OK') {
              directionsRenderer2.setDirections(response2);
 
-            
+
             var request3 = {
               origin: response1.routes[0].legs[0].start_location,
               destination: response2.routes[0].legs[0].end_location,

@@ -64,3 +64,22 @@ ol li {
 h3 {
   color: #6ba6da;
 }
+
+form{
+  width: 300px;
+  padding: 10px;
+  margin: 10px 0;
+  font-size: 20px;
+}
+
+select, button {
+  width: 50%; /* Makes select elements and button take full width of the form */
+  padding: 10px 15px; /* Adds padding inside select elements and button */
+  margin-top: 10px; /* Adds top margin for spacing */
+  border-radius: 5px; /* Rounds the corners of the select elements and button */
+  border: 1px solid #ccc; /* Adds a border to the elements */
+  }
+
+option {
+    color: black; /* Ensure text color is visible against the background */
+}
