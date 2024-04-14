@@ -13,25 +13,26 @@
     <body>
         <div class="page">
 
-            <input id="start-input" class="controls" type="text" placeholder="Start Location">
-            <input id="end-input" class="controls" type="text" placeholder="End Location">
-            <button id="goButton">Route</button>
+            <input id="start-input" class="controls" type="text" placeholder="start location">
+            <input id="end-input" class="controls" type="text" placeholder="end location">
+            <button id="gobutton">route</button>
 
-            <form action="/predict" method="post">
-                <label for = "date">Date:</label>
+            <form action="/predict" method="post" id = "prediction-form">
+                <label for = "date">date:</label>
                 <select id="date">
-                    <!-- JS insertions -->
+                    <!-- js insertions -->
                 </select>
-                <label for = "time">Time:</label>
+                <label for = "time">time:</label>
                 <select id="time">
-                    <!-- JS insertions -->
+                    <!-- js insertions -->
                 </select>
-                <label for = "station">Station:</label>
+                <label for = "station">station:</label>
                 <select id="station">
-                    <!-- JS insertions -->
+                    <!-- js insertions -->
                 </select>
-                <button type = "submit">Predict</button>
+                <button type = "submit">predict</button>
             </form>
+            <div id="prediction-Result"></div>
 
 
 

@@ -9,8 +9,9 @@ page with current weather data.
 
 import os
 
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, request, Flask
 from flask_cors import CORS
+
 
 from .routes.data_fetcher import get_latest_weather_data, get_stations_data
 

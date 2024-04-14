@@ -39,16 +39,19 @@ async function fetchStationData() {
     latitude: station.station_info.latitude,
     longitude: station.station_info.longitude,
     name: station.station_info.name,
-    availability: station.availability
+    availability: station.availability,
+    address: station.station_info.address,
 
     }));
     const stationDropdown = document.getElementById('station');
      stationsDataList.forEach(station => {
             const option = document.createElement('option');
             option.value = station.id; // Set value to station name or any unique identifier
-            option.textContent = station.name; // Display text as station name
+            option.textContent = station.address; // Display text as station name
             stationDropdown.appendChild(option);
         });
+
+    document.getElementById("predction")
 
 
 
@@ -59,8 +62,37 @@ async function fetchStationData() {
   }
 }
 
+const dateDropdown = document.getElementById('date');
+let currentDate = new Date();
+for (let i = 0; i < 5; i++) {
+  let dateString = currentDate.toISOString().split('T')[0];
+  let option = new Option(dateString, dateString);
+  dateDropdown.add(option);
+  currentDate.setDate(currentDate.getDate() + 1);
+}
+// Get the select element
+const timeSelect = document.getElementById('time');
 
+// Iterate over the hours from 5 to 24
+for (let hour = 5; hour <= 24; hour++) {
+  // Create a new option element
+  const option = document.createElement('option');
+  option.value = hour; // Set the value to the hour
 
+  // Format the hour as a string and set it as the text
+  if (hour < 12) {
+    option.textContent = `${hour} AM`;
+  } else if (hour === 12) {
+    option.textContent = `${hour} PM`;
+  } else if (hour === 24) {
+    option.textContent = `12 AM`;
+  } else {
+    option.textContent = `${hour - 12} PM`;
+  }
+
+  // Append the option to the select
+  timeSelect.appendChild(option);
+}
 // Fetch station data initially
 fetchStationData();
 fetchWeatherData();
