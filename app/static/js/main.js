@@ -36,6 +36,7 @@ async function fetchStationData() {
 
 
     stationsDataList = data.map(station => ({
+    number: station.station_info.number,
     latitude: station.station_info.latitude,
     longitude: station.station_info.longitude,
     name: station.station_info.name,

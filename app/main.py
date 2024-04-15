@@ -9,7 +9,7 @@ page with current weather data.
 
 import os
 from dotenv import load_dotenv
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, request
 import requests
 from flask_cors import CORS
 import tensorflow as tf
@@ -23,15 +23,10 @@ import pandas as pd
 from datetime import datetime, timedelta
 
 
-@tf.keras.utils.register_keras_serializable()
-def mse(y_true, y_pred):
-    return tf.keras.losses.mean_squared_error(y_true, y_pred)
-
-
 load_dotenv()
 from tensorflow.keras.models import load_model
 
-model = load_model('app/ml_model.h5', custom_objects={})
+model = load_model("app/ml_model.h5", custom_objects={})
 api_key = os.getenv("FIVE_DAY_URL")
 if api_key is None:
     msg = "Api key not set in .env"
@@ -81,7 +76,8 @@ def predict():
     time = request.form["time"]
     number = request.form["station"]
 
-    dt = datetime.strptime(date + " " + time, "%Y-%m-%d %H:%M:%S")
+    dt_string = date + " " + time
+    dt = datetime.strptime(dt_string, "%Y-%m-%d %H")
     timestamp = int(dt.replace(tzinfo=pytz.UTC).timestamp())
 
     day = dt.day
@@ -113,14 +109,3 @@ def predict():
     prediction_result = prediction[0][0]
 
     return jsonify({"prediction": prediction_result})
-
-
-def prepare_input(number, WindSpeed, Temperature, month, day, hour):
-    numeric_features = ["Temperature", "WindSpeed", "day", "hour", "month"]
-    category_features = ["number"]
-    preprocessor = ColumnTransformer(
-        transformers=[
-            ("num", StandardScaler(), numeric_features),
-            ("cat", OneHotEncoder(), category_features),
-        ]
-    )
