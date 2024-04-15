@@ -8,11 +8,33 @@ page with current weather data.
 """
 
 import os
-
-from flask import Blueprint, render_template, request, Flask
+from dotenv import load_dotenv
+from flask import Blueprint, render_template
+import requests
 from flask_cors import CORS
+import tensorflow as tf
+import pytz
+from keras.models import load_model
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.compose import ColumnTransformer
+import numpy as np
+import pandas as pd
+from datetime import datetime, timedelta
 
+load_dotenv()
+model = tf.keras.models.load_model("ml_model.keras")
+api_key = os.getenv("FIVE_DAY_URL")
+if api_key is None:
+    msg = "Api key not set in .env"
+    raise Exception(msg)  # noqa: TRY002
 
+model = load_model("ml_model.keras")
+preprocessor = ColumnTransformer(
+    transformers=[
+        ("num", StandardScaler(), ["Temperature", "WindSpeed", "day", "hour", "month"]),
+        ("cat", OneHotEncoder(), ["number"]),
+    ]
+)
 from .routes.data_fetcher import get_latest_weather_data, get_stations_data
 
 # Create a Blueprint instance for the main module.
@@ -42,3 +64,54 @@ def weather_data():
 def stations_data():
     """API endpoint for fetching recent station data from database."""
     return get_stations_data()
+
+
+@main.route("/predict", methods=["POST"])
+def predict():
+    date = request.form["date"]
+    time = request.form["time"]
+    number = request.form["station"]
+
+    dt = datetime.strptime(date + " " + time, "%Y-%m-%d %H:%M:%S")
+    timestamp = int(dt.replace(tzinfo=pytz.UTC).timestamp())
+
+    day = dt.day
+    month = dt.month
+    hour = dt.hour
+    year = dt.year
+
+    response = requests.get(str(api_key))
+    weather_data = response.json()
+
+    closest_forecast = min(weather_data["list"], key=lambda x: abs(x["dt"] - timestamp))
+
+    temperature = closest_forecast["main"]["temp"]
+    wind_speed = closest_forecast["wind"]["speed"]
+
+    df = pd.DataFrame(
+        {
+            "Temperature": [temperature],
+            "WindSpeed": [wind_speed],
+            "day": [day],
+            "hour": [hour],
+            "month": [month],
+            "number": [number],  # Assuming 'number' corresponds to the station
+        }
+    )
+    # Apply preprocessing
+    X_new = preprocessor.transform(df)
+    prediction = model.predict(X_new)
+    prediction_result = prediction[0][0]
+
+    return jsonify({"prediction": prediction_result})
+
+
+def prepare_input(number, WindSpeed, Temperature, month, day, hour):
+    numeric_features = ["Temperature", "WindSpeed", "day", "hour", "month"]
+    category_features = ["number"]
+    preprocessor = ColumnTransformer(
+        transformers=[
+            ("num", StandardScaler(), numeric_features),
+            ("cat", OneHotEncoder(), category_features),
+        ]
+    )
