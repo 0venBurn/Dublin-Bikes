@@ -29,7 +29,9 @@ def mse(y_true, y_pred):
 
 
 load_dotenv()
-model = load_model("app/ml_model.h5", custom_objects={"mse": mse})
+from tensorflow.keras.models import load_model
+
+model = load_model('app/ml_model.h5', custom_objects={})
 api_key = os.getenv("FIVE_DAY_URL")
 if api_key is None:
     msg = "Api key not set in .env"
