@@ -1,9 +1,9 @@
 # --- Project Configuration --------------------------------------------------
 [project]
-name = "swe"
+name = "dublin_bus_availability"
 # CalVer: https://calver.org/. Format: YYYY.MM.DD, e.g. 2024.02.19.
-version = "2024.02.19"
-description = "Software Engineering Project"
+version = "2024.03.04"
+description = "A web application to display real-time occupancy and weather data for Dublin Bikes stations."
 authors = [
   { name = "Emma Nolan" },
   { name = "Evan Byrne" },
@@ -55,10 +55,10 @@ select = [
   "PIE",   # flake8-pie
   "PL",    # pylint
   "PTH",   # flake8-use-pathlib
-  "Q",     # flake8-quotes 
+  "Q",     # flake8-quotes
   "RET",   # flake8-return
   "RSE",   # flake8-raise
-  "RUF",   # Ruff-specific 
+  "RUF",   # Ruff-specific
   "S",     # flake8-bandit
   "SIM",   # flake8-simplify
   "SLF",   # flake8-self
@@ -94,6 +94,7 @@ ignore = [
   # --- Off and On ---
   # Place rules here that you may want to comment and uncomment throughout the
   # project development process.
+  "PGH003",
 ]
 
 [tool.ruff.lint.flake8-annotations]
@@ -101,7 +102,7 @@ ignore-fully-untyped = true
 
 [tool.ruff.lint.isort]
 combine-as-imports = true
-required-imports = ["from __future__ import annotations"]
+# required-imports = ["from __future__ import annotations"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"

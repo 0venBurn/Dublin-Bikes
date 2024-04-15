@@ -33,6 +33,7 @@ from sqlalchemy.orm import Session
 
 load_dotenv()
 
+
 api_key = os.getenv("WEATHER_API")
 url = str(os.getenv("WEATHER_URL"))
 if api_key is None:
@@ -42,6 +43,113 @@ db_username = os.getenv("DB_USERNAME")
 db_password = os.getenv("DB_PASSWORD")
 db = os.getenv("DB")
 host = os.getenv("HOST")
+SUCCESS_STATUS_CODE = 200
+
+
+# JSON schema for weather data
+weather_data_schema = {
+    "type": "object",
+    "properties": {
+        "coord": {
+            "type": "object",
+            "properties": {"lon": {"type": "number"}, "lat": {"type": "number"}},
+            "required": ["lon", "lat"],
+        },
+        "weather": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "id": {"type": "integer"},
+                    "main": {"type": "string"},
+                    "description": {"type": "string"},
+                    "icon": {"type": "string"},
+                },
+                "required": ["id", "main", "description", "icon"],
+            },
+        },
+        "base": {"type": "string"},
+        "main": {
+            "type": "object",
+            "properties": {
+                "temp": {"type": "number"},
+                "feels_like": {"type": "number"},
+                "temp_min": {"type": "number"},
+                "temp_max": {"type": "number"},
+                "pressure": {"type": "number"},
+                "humidity": {"type": "number"},
+            },
+            "required": [
+                "temp",
+                "feels_like",
+                "temp_min",
+                "temp_max",
+                "pressure",
+                "humidity",
+            ],
+        },
+        "visibility": {"type": "integer"},
+        "wind": {
+            "type": "object",
+            "properties": {"speed": {"type": "number"}, "deg": {"type": "integer"}},
+            "required": ["speed", "deg"],
+        },
+        "clouds": {
+            "type": "object",
+            "properties": {"all": {"type": "integer"}},
+            "required": ["all"],
+        },
+        "dt": {"type": "integer"},
+        "sys": {
+            "type": "object",
+            "properties": {
+                "type": {"type": "integer"},
+                "id": {"type": "integer"},
+                "country": {"type": "string"},
+                "sunrise": {"type": "integer"},
+                "sunset": {"type": "integer"},
+            },
+            "required": ["type", "id", "country", "sunrise", "sunset"],
+        },
+        "timezone": {"type": "integer"},
+        "id": {"type": "integer"},
+        "name": {"type": "string"},
+        "cod": {"type": "integer"},
+    },
+    "required": [
+        "coord",
+        "weather",
+        "base",
+        "main",
+        "visibility",
+        "wind",
+        "clouds",
+        "dt",
+        "sys",
+        "timezone",
+        "id",
+        "name",
+        "cod",
+    ],
+}
+
+
+def get_weather_data() -> dict | None:
+    """
+    Fetches weather data from the API.
+
+    Returns:
+        dict | None: The weather data as a dictionary, or None if there was an error.
+    """
+    params = {
+        "lat": 53.3498,  # Latitude for Dublin
+        "lon": -6.2603,  # Longitude for Dublin
+        "exclude": "minutely,hourly,daily,alerts",  # Exclude unnecessary data
+        "units": "metric",  # Use metric units
+        "appid": api_key,  # Your API key
+    }
+
+
 SUCCESS_STATUS_CODE = 200
 
 

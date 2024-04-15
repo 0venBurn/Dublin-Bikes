@@ -1,0 +1,49 @@
+{
+  "name": "dublin_bikes_availability",
+  "version": "2024.02.28",
+  "description": "A web application to display real-time occupancy and weather data for Dublin Bikes stations.",
+  "main": "app.py",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/0venBurn/SWE_Flask_Project"
+  },
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "htmlhint": "^1.1.4",
+    "prettier": "^3.2.5",
+    "stylelint": "^16.2.1",
+    "stylelint-config-standard": "^36.0.0"
+  },
+  "scripts": {
+    "lint:eslint": "npx eslint .",
+    "fix:eslint": "npx eslint . --fix",
+    "lint:stylelint": "npx stylelint '**/*.css'",
+    "fix:stylelint": "npx stylelint '**/*.css' --fix",
+    "check:prettier": "npx prettier --check .",
+    "format:prettier": "npx prettier --write .",
+    "lint:htmlhint": "npx htmlhint '**/*.html'",
+    "lint:ruff": "ruff check .",
+    "fix:ruff": "ruff check . --fix",
+    "format:ruff": "ruff format ."
+  },
+  "author": "Emma Nolan",
+  "contributors": [
+    {
+      "name": "Emma Nolan"
+    },
+    {
+      "name": "Evan Byrne"
+    },
+    {
+      "name": "Adam Herdman"
+    }
+  ],
+  "license": "CC BY-NC 4.0"
+}
