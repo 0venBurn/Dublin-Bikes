@@ -18,21 +18,25 @@
             <button id="gobutton">route</button>
 
             <form action="/predict" method="post" id = "prediction-form">
-                <label for = "date">date:</label>
+                <label for = "date">Date:</label>
                 <select id="date">
                     <!-- js insertions -->
                 </select>
-                <label for = "time">time:</label>
+                <label for = "time">Time:</label>
                 <select id="time">
                     <!-- js insertions -->
                 </select>
-                <label for = "station">station:</label>
+                <label for = "station">Station:</label>
                 <select id="station">
                     <!-- js insertions -->
                 </select>
-                <button type = "submit">predict</button>
+                <button type = "submit">Predict!</button>
             </form>
-            <div id="prediction-Result"></div>
+            <div id="resultsBox">
+                <h1>Results</h1>
+                <p id="resultsText">Results will appear here</p>
+            </div>
+
 
 
 

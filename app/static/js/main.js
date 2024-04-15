@@ -46,14 +46,10 @@ async function fetchStationData() {
     const stationDropdown = document.getElementById('station');
      stationsDataList.forEach(station => {
             const option = document.createElement('option');
-            option.value = station.id; // Set value to station name or any unique identifier
+            option.value = station.number; // Set value to station name or any unique identifier
             option.textContent = station.address; // Display text as station name
             stationDropdown.appendChild(option);
         });
-
-    document.getElementById("predction")
-
-
 
     // Call initMap after stationsData is populated
     initMap();
@@ -93,6 +89,28 @@ for (let hour = 5; hour <= 24; hour++) {
   // Append the option to the select
   timeSelect.appendChild(option);
 }
+document.getElementById('prediction-form').addEventListener('submit', function(event) {
+  event.preventDefault();
+
+  const formData = new FormData(this);
+  fetch('/predict', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('resultText').innerText = data.prediction;
+        document.getElementById('resultsBox').style.display = 'block'; // Show the results box
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        document.getElementById('resultText').innerText = 'Failed to load prediction: ' + error.message;
+        document.getElementById('resultsBox').style.display = 'block'; // Show error in results box
+    });
+});
+
+
+
 // Fetch station data initially
 fetchStationData();
 fetchWeatherData();
