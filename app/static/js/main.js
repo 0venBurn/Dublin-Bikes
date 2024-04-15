@@ -100,12 +100,12 @@ document.getElementById('prediction-form').addEventListener('submit', function(e
     })
     .then(response => response.json())
     .then(data => {
-        document.getElementById('resultText').innerText = data.prediction;
+        document.getElementById('resultsText').innerText = "Prediction " + data.prediction;
         document.getElementById('resultsBox').style.display = 'block'; // Show the results box
     })
     .catch(error => {
         console.error('Error:', error);
-        document.getElementById('resultText').innerText = 'Failed to load prediction: ' + error.message;
+        document.getElementById('resultsText').innerText = 'Failed to load prediction: ' + error.message;
         document.getElementById('resultsBox').style.display = 'block'; // Show error in results box
     });
 });

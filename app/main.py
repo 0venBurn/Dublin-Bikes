@@ -8,20 +8,22 @@ page with current weather data.
 """
 
 import os
-from dotenv import load_dotenv
-from flask import Blueprint, render_template, request
-import requests
-from flask_cors import CORS
-import tensorflow as tf
-import pytz
-from tensorflow.keras.models import load_model
 import pickle
+from datetime import datetime, timedelta
 
-from sklearn.preprocessing import StandardScaler, OneHotEncoder
-from sklearn.compose import ColumnTransformer
 import numpy as np
 import pandas as pd
-from datetime import datetime, timedelta
+import pytz
+import requests
+import tensorflow as tf
+from dotenv import load_dotenv
+from flask import Blueprint, render_template, request, jsonify
+from flask_cors import CORS
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
+from tensorflow.keras.models import load_model
+
+enc = OneHotEncoder(handle_unknown="ignore")
 
 
 load_dotenv()
@@ -90,20 +92,26 @@ def predict():
 
     df = pd.DataFrame(
         {
+            "number": [number],
             "Temperature": [temperature],
             "WindSpeed": [wind_speed],
+            "year": [year],
+            "month": [month],
             "day": [day],
             "hour": [hour],
-            "month": [month],
-            "number": [number],  # Assuming 'number' corresponds to the station
         }
     )
-    # Apply preprocessing
+    df = df.astype(int)
+
+    numeric_features = ["Temperature", "WindSpeed", "day", "hour", "month", "year"]
+    categorical_features = ["number"]
+    print(df)
     with open("app/preprocessor.pkl", "rb") as f:
         preprocessor = pickle.load(f)
     X_new = preprocessor.transform(df)
     prediction = model.predict(X_new)
     rounded_prediction = np.round(prediction)
     prediction_result = int(rounded_prediction[0][0])
+    print(prediction_result)
 
     return jsonify({"prediction": prediction_result})
