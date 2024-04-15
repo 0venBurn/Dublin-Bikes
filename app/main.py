@@ -14,21 +14,28 @@ import requests
 from flask_cors import CORS
 import tensorflow as tf
 import pytz
-from keras.models import load_model
+from tensorflow.keras.models import load_model
+
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
 import numpy as np
 import pandas as pd
 from datetime import datetime, timedelta
 
+
+@tf.keras.utils.register_keras_serializable()
+def mse(y_true, y_pred):
+    return tf.keras.losses.mean_squared_error(y_true, y_pred)
+
+
 load_dotenv()
-model = tf.keras.models.load_model("ml_model.keras")
+model = load_model("app/ml_model.h5", custom_objects={"mse": mse})
 api_key = os.getenv("FIVE_DAY_URL")
 if api_key is None:
     msg = "Api key not set in .env"
     raise Exception(msg)  # noqa: TRY002
 
-model = load_model("ml_model.keras")
+
 preprocessor = ColumnTransformer(
     transformers=[
         ("num", StandardScaler(), ["Temperature", "WindSpeed", "day", "hour", "month"]),
