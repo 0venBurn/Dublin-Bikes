@@ -15,6 +15,7 @@ from flask_cors import CORS
 import tensorflow as tf
 import pytz
 from tensorflow.keras.models import load_model
+import pickle
 
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
@@ -33,12 +34,6 @@ if api_key is None:
     raise Exception(msg)  # noqa: TRY002
 
 
-preprocessor = ColumnTransformer(
-    transformers=[
-        ("num", StandardScaler(), ["Temperature", "WindSpeed", "day", "hour", "month"]),
-        ("cat", OneHotEncoder(), ["number"]),
-    ]
-)
 from .routes.data_fetcher import get_latest_weather_data, get_stations_data
 
 # Create a Blueprint instance for the main module.
@@ -104,8 +99,11 @@ def predict():
         }
     )
     # Apply preprocessing
+    with open("app/preprocessor.pkl", "rb") as f:
+        preprocessor = pickle.load(f)
     X_new = preprocessor.transform(df)
     prediction = model.predict(X_new)
-    prediction_result = prediction[0][0]
+    rounded_prediction = np.round(prediction)
+    prediction_result = int(rounded_prediction[0][0])
 
     return jsonify({"prediction": prediction_result})
