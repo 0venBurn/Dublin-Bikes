@@ -8,7 +8,7 @@ let directionsRenderer2;
 let directionsService3;
 let directionsRenderer3;
 let stationsDataList = [];
-
+let weatherData;
 
 
 
@@ -17,7 +17,8 @@ async function fetchWeatherData() {
   try {
     const response = await fetch("/api/weather", {});
     const data = await response.json();
-    console.log("Weather Data", data);
+  	weatherData = data; //data filled into global var to use in click listener
+    console.log("Weather Data", weatherData);
   } catch (error) {
     console.error("Error fetching weather data:", error);
   }
@@ -151,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
       stationNameCell.innerHTML = name;
       availabilityCell.innerHTML = `Available stands: ${availability.available_bike_stands}<br>Available bikes: ${availability.available_bikes}`;
       const roundedTemp = Math.round(weatherData.weather_info.Temperature);
-      tempDiv.innerHTML = `Temperature: ${roundedTemp}Â°C<br>Condition: ${weatherData.weather_info.Condition}`;
+      tempDiv.innerHTML = `Temperature: ${roundedTemp}°C<br>Condition: ${weatherData.weather_info.Condition}`;
     });
   }
 
