@@ -417,6 +417,6 @@ function calcRoute() {
       return closestStation;
       }
 
-    const button = document.getElementById("goButton");
+    const button = document.getElementById("go-button");
     button.onclick = calcRoute;
 });

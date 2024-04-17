@@ -15,7 +15,7 @@
 
             <input id="start-input" class="controls" type="text" placeholder="start location">
             <input id="end-input" class="controls" type="text" placeholder="end location">
-            <button id="gobutton">route</button>
+            <button id="go-button">route</button>
 
             <form action="/predict" method="post" id = "prediction-form">
                 <label for = "date">Date:</label>
@@ -73,14 +73,13 @@
                 <div id="map"></div>
             </div>
         </div>
+
+        <script
+            src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&libraries=places,geometry"
+        ></script>
         <script
             type="module"
             src="{{ url_for('static', filename='js/main.js') }}"
-        ></script>
-        <script
-            async
-            defer
-            src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&libraries=places,geometry&callback=initMap"
         ></script>
     </body>
 </html>
