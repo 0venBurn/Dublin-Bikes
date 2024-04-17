@@ -47,7 +47,7 @@ async function fetchStationData() {
     const stationDropdown = document.getElementById('station');
      stationsDataList.forEach(station => {
             const option = document.createElement('option');
-            option.value = station.number; // Set value to station name or any unique identifier
+            option.value = station.number; // Set value to station name 
             option.textContent = station.address; // Display text as station name
             stationDropdown.appendChild(option);
         });
