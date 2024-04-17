@@ -1,131 +1,409 @@
+:root {
+  /* Typography */
+  --font-family-system: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Helvetica, Arial, sans-serif;
+  --font-size-base: 1rem; /* 14px */
+  --font-size-small: 0.75rem;
+  --font-size-medium: 1.25rem; /* 17.5px */
+  --font-size-intermediate: 1.5rem; /* 21px */
+  --font-size-large: 1.75rem; /* 24.5px */
+  --font-size-xl: 1.9rem;
+  --line-height-base: 1.6; /* 22.4px */
+  --font-weight-normal: 400;
+  --font-weight-bold: 600;
+
+  /* Spacing */
+  --spacing-base: 0.5rem; /* 7px */
+  --padding-base: 1rem; /* 14px */
+  --padding-small: 0.5rem; /* 7px */
+  --margin-base: 1rem; /* 14px */
+  --margin-bottom: 0.5rem; /* 7px */
+  --width-container-max: 1024px;
+
+  /* Base Colors */
+  --color-background-primary: #ffffff;
+  --color-background-secondary: #f7f7f7;
+  --color-main-background: #ececec;
+  --color-text-primary: #333;
+  --color-text-secondary: #6e6e6e;
+  --color-text-header: #2d2d2d;
+  --color-container1-background: #e0e0e0;
+  --color-neutral-very-light: #f9fafb;
+  --color-neutral-mid-light: #d3d3d3;
+
+  /* Header Colors */
+  --color-header-background: #f8f8f8;
+  --color-header-text: #1a1a1a;
+
+  /* Accent Colors */
+  --color-accent: #007aff;
+  --color-accent-hover: #005fcbef;
+  --color-accent-pressure: #007bff6f;
+  --color-text-on-accent: #ffffff;
+
+  /* Selection Colors */
+  --color-selection-outline: #0076ff80;
+
+  /* Semantic Colors */
+  --color-red: #cc4b4c;
+  --color-blue: #4c81cc;
+  --color-yellow: #e1b64a;
+
+  /* Window and Container */
+  --color-window: #ffffff;
+  --color-container-border: #d1d6dc;
+
+  /* Error Colors */
+  --color-error: #e53e3e;
+  --color-error-background: #fee2e2;
+  --color-error-text: #86181d;
+
+  /* Borders and Radius */
+  --border-radius-small: 4px;
+  --border-radius-medium: 6px;
+  --border-radius-base: 8px;
+
+  /* Shadows */
+  --shadow-base: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-hover: 0 4px 8px rgba(0, 0, 0, 0.2);
+
+  /* Interactive States */
+  --button-press-scale: scale(0.95);
+  --button-hover-scale: scale(1.01);
+
+  /* Transitions */
+  --transition-base: all 0.3s ease;
+  --transition-duration: 0.2s;
+  --transition-easing: ease-out;
+  --button-press-transition: 0.4 ease-in-out;
+  --button-hover-transition: background-color 0.3s ease;
+
+  /* System */
+  --system-font-smoothing: antialiased;
+}
+
+/*
+  ================================
+  SECTION: Base Styles
+  ================================
+*/
+
+/*
+  --------------------------------
+  SUBSECTION: Reset/Normalise
+  --------------------------------
+*/
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Ensure consistent border, margin, and padding for all elements */
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+/*
+  --------------------------------
+  SUBSECTION: Page Defaults
+  --------------------------------
+*/
+
+html {
+  font-family: var(--font-family-system);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  font-weight: var(--font-weight-normal);
+  scroll-behavior: smooth;
+}
+
 body {
-  color: #40a375;
-  text-align: center;
+  color: var(--color-text-primary);
+  background-color: var(--color-main-background);
+  font-family: var(--font-family-system);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  -webkit-font-smoothing: var(--system-font-smoothing);
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  transition: opacity 1s ease-in-out;
 }
 
-.page {
-  width: 1000px;
-  text-align: left;
-  margin-left: auto;
-  margin-right: auto;
-  border: 1px solid #d45959;
-  padding: 20px;
+/*
+  --------------------------------
+  SUBSECTION: Headings
+  --------------------------------
+*/
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin-bottom: var(--margin-base);
+  font-weight: var(--font-weight-bold);
 }
 
-.parent-container {
-  display: flex;
-  justify-content: space-between;
+h2 {
+  font-size: var(--font-size-medium);
 }
 
-.station-and-list-container {
+
+/*
+  ================================
+  SECTION: Components
+  ================================
+*/
+
+/*
+  --------------------------------
+  SUBSECTION: Text Elements
+  --------------------------------
+*/
+
+/* Paragraphs */
+p {
+  margin-bottom: var(--margin-bottom);
+}
+
+/* Bold Text */
+strong {
+  font-weight: var(--font-weight-bold);
+}
+
+/*
+  --------------------------------
+  SUBSECTION: Button 
+  --------------------------------
+*/
+
+button {
+    padding:  var(--padding-small);
+    border-radius: var(--border-radius-base);
+    background-color: var(--color-accent);
+    color: var(--color-text-on-accent);
+    border: none;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    -ms-appearance: none;
+
+}
+
+button:hover {
+  background-color: var(--color-accent-hover);
+  transition: var(--button-hover-transition);
+  transform: var(--button-hover-scale);
+}
+
+button:active {
+  transform: var(--button-press-scale); 
+  transition: var(--button-press-transition);
+
+}
+
+/*
+  --------------------------------
+  SUBSECTION: Text Input
+  --------------------------------
+*/
+
+input[type="text"] {
+    padding: var(--padding-small);
+    border: 1px solid var(--color-container-border);
+    border-radius: var(--border-radius-base);
+    background-color: var(--color-background-primary);
+    color: var(--color-text-primary);
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    -ms-appearance: none;
+}
+
+input[type="text"]:focus {
+    outline: none;
+    border: 1px solid var(--color-selection-outline);
+    box-shadow: 0 0 0 1px var(--color-selection-outline);
+}
+
+
+/*
+  --------------------------------
+  SUBSECTION: Forms
+  --------------------------------
+*/
+
+select {
+    padding: var(--padding-small);
+    border: 1px solid var(--color-container-border);
+    border-radius: var(--border-radius-base);
+    background-color: var(--color-background-primary);
+    color: var(--color-text-primary);
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    -ms-appearance: none;
+}
+
+select:focus {
+    outline: none;
+    border: 1px solid var(--color-selection-outline);
+    box-shadow: 0 0 0 1px var(--color-selection-outline);
+}
+
+
+/*
+  ================================
+  SECTION: Layout
+  ================================
+*/
+
+/*
+  --------------------------------
+  SUBSECTION: Main Content Area
+  --------------------------------
+*/
+
+main {
+  margin: var(--margin-base) auto;
+  max-width: var(--width-container-max);
+}
+
+/*
+  --------------------------------
+  SUBSECTION: Section Styling
+  --------------------------------
+*/
+
+section {
+  margin-bottom: var(--margin-bottom);
+  padding: 0.5rem;
+  background-color: var(--color-background-secondary);
+  border-radius: var(--border-radius-base);
+}
+
+/*
+  --------------------------------
+  SECTION: Header
+  --------------------------------
+*/
+
+header {
+  background-color: var(--color-header-background);
+  padding: 1.25rem 0;
+  box-shadow: var(--shadow-small);
+  margin-bottom: var(--margin-bottom);
+  border-radius: var(--border-radius-base);
+}
+
+header h1 {
+    color: var(--color-header-text);
+    text-align: center;
+    font-size: var(--font-size-large);
+    font-weight: var(--font-weight-bold);
+    margin: 0;
+
+}
+
+/*
+  ================================
+  SECTION: Search Section
+  ================================
+*/
+
+.search-location-container {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-base);
+    padding: var(--padding-base);
+    background: var(--color-background-primary);
+    border-radius: var(--border-radius-base);
+}
+
+/*
+  ================================
+  SECTION: Prediction Section
+  ================================
+*/
+
+.search-prediction-container {
   display: flex;
   flex-direction: column;
+  gap: var(--spacing-base);
+  padding: var(--padding-base);
+  background: var(--color-background-primary);
+  border-radius: var(--border-radius-base);
 }
 
-.table-container {
-  width: 260px;
-  margin-right: 20px;
-}
-
-table {
-  /* flex: 1; */
-  width: 275px;
-  margin-right: 15px;
-  border-style: groove;
-}
-
-td {
-  border: 1px solid;
-  padding: 8px;
-}
-
-.list-container {
-  width: 275px;
-}
-
-ol {
-  list-style-type: decimal;
-  font-size: 25px;
-  transform: rotate(340deg);
-}
-
-ol li {
-  padding: 5px;
-}
-
-.map,
-#map {
-  height: 700px;
-  width: 700px;
-  border-style: groove;
-  margin-left: auto;
-}
-
-h3 {
-  color: #6ba6da;
-}
-
-form{
-  width: 300px;
-  padding: 10px;
-  margin: 10px 0;
-  font-size: 20px;
-}
-
-select, button {
-  width: 50%; /* Makes select elements and button take full width of the form */
-  padding: 10px 15px; /* Adds padding inside select elements and button */
-  margin-top: 10px; /* Adds top margin for spacing */
-  border-radius: 5px; /* Rounds the corners of the select elements and button */
-  border: 1px solid #ccc; /* Adds a border to the elements */
-  }
-
-option {
-    color: black; /* Ensure text color is visible against the background */
-}
-.modal {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1000; /* Increased z-index to ensure it's on top of other content */
-    left: 0;
-    top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-}
-
-/* Modal Content Box */
-.modal-content {
-    background-color: #fefefe;
-    margin: 10% auto; /* Adjusted for better vertical alignment */
-    padding: 20px;
-    border: 1px solid #888;
-    border-radius: 10px; /* Rounded corners */
-    width: 30%; /* More box-like appearance */
-    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.5), 0 6px 20px 0 rgba(0,0,0,0.5); /* Enhanced 3D effect */
-    text-align: center; /* Centers text inside the modal */
-}
-
-/* The Close Button */
-.close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
-}
-.modal {
+.search-prediction-form, .prediction-results-container{
   display: flex;
-  align-items: center; /* Aligns children vertically in the center */
-  justify-content: center; /* Aligns children horizontally in the center */
+  justify-content: center;
 }
-.modal-content {
-  margin: 0; /* Remove margin since flexbox is taking care of centering */
+
+.search-prediction-form {
+  justify-content: center;
+}
+
+.prediction-results-container {
+  justify-content: left;
+  flex-wrap: wrap;
+}
+
+/*
+  ================================
+  SECTION: Main Section
+  ================================
+*/
+
+.main-section {
+    display: flex;
+    flex-direction: row;
+    gap: var(--spacing-base);
+}
+
+/*
+  --------------------------------
+  SUBSECTION: Stations Container
+  --------------------------------
+*/
+
+.information-container {
+    display: flex;
+    flex-direction: column;
+    width: 33.33%;
+}
+
+.station-info-container, .best-station-container {
+    background: var(--color-background-primary);
+    padding: var(--padding-base);
+    margin-bottom: var(--margin-bottom);
+    border-radius: var(--border-radius-base);
+    box-shadow: var(--shadow-base);
+}
+
+/*
+  --------------------------------
+  SUBSECTION: Map Container
+  --------------------------------
+*/
+
+.map-container {
+    flex-grow: 1;
+    height: 600px;
+    border-radius: var(--border-radius-base);
+    overflow: hidden;
 }

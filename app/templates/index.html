@@ -10,73 +10,87 @@
             href="{{ url_for('static', filename='css/site.css') }}"
         />
     </head>
+
     <body>
-        <div class="page">
+        <main>
+            <header>
+                <h1>Dublin Bikes Availability</h1>
+            </header>
 
-            <input id="start-input" class="controls" type="text" placeholder="start location">
-            <input id="end-input" class="controls" type="text" placeholder="end location">
-            <button id="go-button">route</button>
+            <section class="search-section">
+                <div class="search-location-container">
+                    <input id="start-input" class="controls" type="text" placeholder="Start Location">
+                    <input id="end-input" class="controls" type="text" placeholder="End Location">
+                    <button id="go-button">Route</button>
+                </div>
+            </section>
 
-            <form action="/predict" method="post" id = "prediction-form">
-                <label for = "date">Date:</label>
-                <select id="date" name="date">
+            <section class="prediction-section">
+                <div class="search-prediction-container">
 
-                    <!-- js insertions -->
-                </select>
-                <label for = "time">Time:</label>
-                <select id="time" name="time">
-                    <!-- js insertions -->
-                </select>
-                <label for = "station">Station:</label>
-                <select id="station" name="station">
-                    <!-- js insertions -->
-                </select>
-                <button type = "submit">Predict!</button>
-            </form>
-            <div id="resultsBox">
-                <h1>Results</h1>
-                <p id="resultsText">Results will appear here</p>
-            </div>
+                    <div class="search-prediction-form">
+                        <form action="/predict" method="post" id = "prediction-form">
+                            <label for = "date"></label>
+                            <select id="date" name="date">
+                                <option value="" disabled selected>Date</option>
+                                <!-- js insertions -->
+                            </select>
 
+                            <label for = "time"></label>
+                            <select id="time" name="time">
+                                <option value="" disabled selected>Time</option>
+                                <!-- js insertions -->
+                            </select>
 
+                            <label for = "station"></label>
+                            <select id="station" name="station">
+                                <option value="" disabled selected>Station</option>
+                                <!-- js insertions -->
+                            </select>
 
-
-            <h1>Dublin Bikes Availability</h1>
-            <p class="intro">The Best Station For You Would Be...</p>
-
-            <div class="parent-container">
-                <div class="station-and-list-container">
-                    <div class="table-container">
-                        <table>
-                            <tr>
-                                <td id="stationNameCell">Station Name</td>
-                            </tr>
-                            <tr>
-                                <td id="temp-div">Weather</td>
-                            </tr>
-                            <tr>
-                                <td id="availabilityCell">Bike Availability</td>
-                            </tr>
-                        </table>
+                            <button type = "submit">Predict</button>
+                        </form>
                     </div>
-                    <div class="list-container">
-                        <h1>Nearby Stations...</h1>
-                        <ol>
-                            <li>Next Best Station</li>
-                            <li>2nd Next Best Station</li>
-                            <li>3rd Next Best Station</li>
-                            <li>4th Next Best Station</li>
-                            <li>5th Next Best Station</li>
-                        </ol>
+
+                    <div class="prediction-results-container" id="resultsBox" style="display: none;">
+                        <p id="predictionText"></p>
+                    </div>
+
+                </div>
+            </section>
+
+            <section class="main-section">
+                <div class="information-container">
+                    <div class="station-info-container">
+                        <h2>Selected Station</h2>
+                            <div class="station-info">
+                                <p id="stationNameCell">No station selected.</p>
+                                <p id="temperatureCell"></p>
+                                <p id="weatherConditionCell"></p>
+                                <p id="standAvailabilityCell"></p>
+                                <p id="bikeAvailabilityCell"></p>
+                            </div>
+                    </div>
+
+                    <div class="best-station-container">
+                        <h2>Best Station</h2>
+                        <div class="best-station-info">
+                            <p id="bestStartStationCell">No route selected.</p>
+                            <p id="bestEndStationCell"></p>
+                        </div>
                     </div>
                 </div>
-                <div id="map"></div>
-            </div>
-        </div>
 
+                <div id="map" class="map-container">
+                    <!-- Map will be loaded here -->
+                </div>
+            </section>
+        </main>
+        
         <script
             src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&libraries=places,geometry"
         ></script>
+        
         <script
             type="module"
             src="{{ url_for('static', filename='js/main.js') }}"

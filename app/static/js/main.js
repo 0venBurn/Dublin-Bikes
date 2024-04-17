@@ -54,7 +54,9 @@ async function fetchStationData() {
         });
 
     // Call initMap after stationsData is populated
-    initMap();
+    if (typeof google !== 'undefined') {
+      initMap();
+    }
   } catch (error) {
     console.error("Error fetching station data:", error);
   }
@@ -63,8 +65,13 @@ async function fetchStationData() {
 const dateDropdown = document.getElementById('date');
 let currentDate = new Date();
 for (let i = 0; i < 5; i++) {
-  let dateString = currentDate.toISOString().split('T')[0];
-  let option = new Option(dateString, dateString);
+  // Format the date as "1 July 2024"
+  let formattedDate = currentDate.toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  });
+  let option = new Option(formattedDate, currentDate.toISOString().split('T')[0]);
   dateDropdown.add(option);
   currentDate.setDate(currentDate.getDate() + 1);
 }
@@ -94,19 +101,32 @@ for (let hour = 5; hour <= 24; hour++) {
 document.getElementById('prediction-form').addEventListener('submit', function(event) {
   event.preventDefault();
 
-  const formData = new FormData(this);
-  fetch('/predict', {
+    // Capture the selected date, time, and station
+    const dateValue = document.getElementById('date').value;
+    const date = new Date(dateValue);
+    const formattedDate = date.toLocaleDateString('en-GB', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    });
+    const time = document.getElementById('time').options[document.getElementById('time').selectedIndex].text;
+    const station = document.getElementById('station').options[document.getElementById('station').selectedIndex].text;
+
+    const formData = new FormData(this);
+    fetch('/predict', {
         method: 'POST',
         body: formData
     })
     .then(response => response.json())
     .then(data => {
-        document.getElementById('resultsText').innerText = "Prediction " + data.prediction;
-        document.getElementById('resultsBox').style.display = 'block'; // Show the results box
+        // Update the header and paragraph with actual data
+        document.getElementById('predictionText').innerHTML = `The predicted number of bikes available at ${station} on ${formattedDate} at ${time} is <strong>${data.prediction}</strong>.`;
+
+        // Show the results box
+        document.getElementById('resultsBox').style.display = 'block';
     })
     .catch(error => {
         console.error('Error:', error);
-        document.getElementById('resultsText').innerText = 'Failed to load prediction: ' + error.message;
         document.getElementById('resultsBox').style.display = 'block'; // Show error in results box
     });
 });
@@ -152,6 +172,10 @@ document.addEventListener('DOMContentLoaded', () => {
       title: name,
       opacity: 0.75
     });
+
+    allMarkers.push(marker); // Add the marker to the array of all markers
+
+    return marker;
   }
 
   /**
@@ -164,14 +188,19 @@ document.addEventListener('DOMContentLoaded', () => {
    */
   function addMarkerClickListener(marker, { station_info: { name }, availability }) {
     const stationNameCell = document.getElementById('stationNameCell');
-    const availabilityCell = document.getElementById('availabilityCell');
-    const tempDiv = document.getElementById('temp-div');
+    const standAvailabilityCell = document.getElementById('standAvailabilityCell');
+    const bikeAvailabilityCell = document.getElementById('bikeAvailabilityCell');
+    const temperatureCell = document.getElementById('temperatureCell');
+    const weatherConditionCell = document.getElementById('weatherConditionCell');
 
     marker.addListener('click', () => {
-      stationNameCell.innerHTML = name;
-      availabilityCell.innerHTML = `Available stands: ${availability.available_bike_stands}<br>Available bikes: ${availability.available_bikes}`;
+      stationNameCell.innerHTML = `<strong>Station Name:</strong> ${name}`;
+      standAvailabilityCell.innerHTML = `<strong>Available Stands:</strong> ${availability.available_bike_stands}`;
+      bikeAvailabilityCell.innerHTML = `<strong>Available Bikes:</strong> ${availability.available_bikes}`;
+
       const roundedTemp = Math.round(weatherData.weather_info.Temperature);
-      tempDiv.innerHTML = `Temperature: ${roundedTemp}°C<br>Condition: ${weatherData.weather_info.Condition}`;
+      temperatureCell.innerHTML = `<strong>Temperature:</strong> ${roundedTemp}°C`;
+      weatherConditionCell.innerHTML = `<strong>Condition:</strong> ${weatherData.weather_info.Condition}`;
     });
   }
 
@@ -396,6 +425,8 @@ function calcRoute() {
         window.alert('Directions request failed due to ' + status1);
       }
     });
+    document.getElementById('bestStartStationCell').innerHTML = `<strong>Best Start Station:</strong> ${bestStartStation.name}`;
+    document.getElementById('bestEndStationCell').innerHTML= `<strong>Best End Station:</strong> ${bestEndStation.name}`;
   } else {
     window.alert('Start location, end location, best start station, or best end station is not available.');
   }
