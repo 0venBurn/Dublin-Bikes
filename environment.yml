@@ -2,8 +2,6 @@ name: flask_dev
 channels:
   - defaults
 dependencies:
-  - _libgcc_mutex=0.1
-  - _openmp_mutex=5.1
   - anyio=4.2.0
   - argon2-cffi=21.3.0
   - argon2-cffi-bindings=21.2.0
@@ -66,26 +64,16 @@ dependencies:
   - jupyterlab_widgets=3.0.9
   - krb5=1.20.1
   - lazy-object-proxy=1.6.0
-  - ld_impl_linux-64=2.38
-  - libclang13=14.0.6default_he11475f_1
-  - libcups=2.4.2
   - libedit=3.1.20230828
-  - libffi=3.4.4=h6a678d5_0
-  - libgcc-ng=11.2.0
   - libglib=2.78.4
-  - libgomp=11.2.0
   - libiconv=1.16
   - libllvm14=14.0.6
   - libpng=1.6.39
   - libpq=12.17
   - libsodium=1.0.18
-  - libstdcxx-ng=11.2.0
-  - libuuid=1.41.5
   - libxcb=1.15
-  - libxkbcommon=1.0.1
   - libxml2=2.10.4
   - lz4-c=1.9.4
-  - markupsafe=2.1.3py311h5eee18b_0
   - matplotlib-inline=0.1.6
   - mccabe=0.7.0
   - mistune=2.0.4
