@@ -1,1 +1,1 @@
-"""Initialise the ml package."""
+"""This module initialises the machine learning model."""

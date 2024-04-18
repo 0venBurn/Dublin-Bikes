@@ -2,54 +2,40 @@
   /* Typography */
   --font-family-system: -apple-system, blinkmacsystemfont, "Segoe UI", roboto,
     helvetica, arial, sans-serif;
-  --font-size-base: 1rem; /* 14px */
-  --font-size-medium: 1.25rem; /* 17.5px */
-  --font-size-large: 1.75rem; /* 24.5px */
-  --line-height-base: 1.6; /* 22.4px */
+  --font-size-base: 1rem;
+  --font-size-medium: 1.25rem;
+  --font-size-large: 1.75rem;
+  --line-height-base: 1.6;
   --font-weight-normal: 400;
   --font-weight-bold: 600;
 
   /* Spacing */
-  --spacing-base: 0.5rem; /* 7px */
-  --padding-base: 1rem; /* 14px */
-  --padding-small: 0.5rem; /* 7px */
-  --margin-base: 1rem; /* 14px */
-  --margin-bottom: 0.5rem; /* 7px */
+  --spacing-base: 0.5rem;
+  --padding-base: 1rem;
+  --padding-small: 0.5rem;
+  --margin-base: 1rem;
+  --margin-bottom: 0.5rem;
   --width-container-max: 1100px;
   --gap-base: 0.25rem;
 
-  /* Base Colors */
+  /* Colours */
   --color-background-primary: #fdfdfd;
   --color-background-secondary: #f7f7f7;
   --color-main-background: #ececec;
-
-  /* Text Colors */
+  --color-header-background: #f8f8f8;
+  --color-accent: #007aff;
+  --color-accent-hover: #005fcbef;
+  --color-selection-outline: #0076ff80;
+  --color-toggle: #a0a0a0;
+  --color-toggle-hover: #909090;
+  --color-container-border: #d1d6dc;
+  --color-error: #e53e3e;
+  --color-error-background: #fee2e2;
+  --color-error-text: #86181d;
   --color-text-header: #1a1a1a;
   --color-text-primary: #3f3e3e;
   --color-text-on-accent: #fff;
   --color-text-heading: #2f2e2e;
-
-  /* Header Colors */
-  --color-header-background: #f8f8f8;
-
-  /* Accent Colors */
-  --color-accent: #007aff;
-  --color-accent-hover: #005fcbef;
-
-  /* Selection Colors */
-  --color-selection-outline: #0076ff80;
-
-  /* Toggle Colors */
-  --color-toggle: #a0a0a0;
-  --color-toggle-hover: #909090;
-
-  /* Window and Container */
-  --color-container-border: #d1d6dc;
-
-  /* Error Colors */
-  --color-error: #e53e3e;
-  --color-error-background: #fee2e2;
-  --color-error-text: #86181d;
 
   /* Borders and Radius */
   --border-radius-base: 8px;
@@ -58,11 +44,9 @@
   --shadow-base: 0 1px 2px rgb(0 0 0 / 5%);
   --shadow-hover: 0 4px 8px rgb(0 0 0 / 20%);
 
-  /* Interactive States */
+  /* Buttons */
   --button-press-scale: scale(0.95);
   --button-hover-scale: scale(1.01);
-
-  /* Transitions */
   --button-press-transition: 0.4 ease-in-out;
   --button-hover-transition: background-color 0.3s ease;
 

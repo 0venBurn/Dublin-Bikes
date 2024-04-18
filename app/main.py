@@ -17,7 +17,7 @@ import pytz
 import requests
 import tensorflow as tf
 from dotenv import load_dotenv
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, jsonify, render_template, request
 from flask_cors import CORS
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
