@@ -12,7 +12,7 @@ class DevelopmentConfig(Config):
     DEBUG: bool = True
 
     # Intentionally set to 0.0.0.0 to allow all IP addresses while in development.
-    HOST: str = "0.0.0.0"
+    HOST: str = "0.0.0.0"  # noqa: S104
     PORT: int = 5000
 
     LOGGING_CONFIG: ClassVar[dict[str, Any]] = {
