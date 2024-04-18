@@ -2,7 +2,7 @@
 [project]
 name = "dublin_bus_availability"
 # CalVer: https://calver.org/. Format: YYYY.MM.DD, e.g. 2024.02.19.
-version = "2024.03.04"
+version = "2024.04.19"
 description = "A web application to display real-time occupancy and weather data for Dublin Bikes stations."
 authors = [
   { name = "Emma Nolan" },
@@ -91,9 +91,6 @@ ignore = [
   "D212",   # Conflicts with D213.
   "D203",   # Conflicts with D211
   "ANN401", # Disables using `any-type` for type annotations.
-  # --- Off and On ---
-  # Place rules here that you may want to comment and uncomment throughout the
-  # project development process.
   "PGH003",
 ]
 

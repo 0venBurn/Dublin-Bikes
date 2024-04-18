@@ -1,6 +1,6 @@
 {
   "name": "dublin_bikes_availability",
-  "version": "2024.02.28",
+  "version": "2024.04.19",
   "description": "A web application to display real-time occupancy and weather data for Dublin Bikes stations.",
   "main": "app.py",
   "repository": {
