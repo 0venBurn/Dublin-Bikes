@@ -1,4 +1,3 @@
-/* eslint-disable prefer-const */
 /* global google */
 let stationsData;
 let startMarkers = [];
@@ -17,6 +16,22 @@ let currentDate = new Date();
 const dateDropdown = document.getElementById('date');
 const timeSelect = document.getElementById('time');
 
+/**
+ * Formats the station name to have each word start with an uppercase letter.
+ * @param {string} name - The station name to format.
+ * @returns {string} The formatted station name.
+ */
+function formatStationName(name) {
+  return name
+    .split(' ')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+}
+
+/**
+ * Displays an error message in the error container.
+ * @param {string} errorMessage - The error message to display.
+ */
 function displayErrorMessage(errorMessage) {
   const errorContainer = document.getElementById('error-container');
   if (errorContainer) {
@@ -25,6 +40,9 @@ function displayErrorMessage(errorMessage) {
   }
 }
 
+/**
+ * Clears the error message from the error container.
+ */
 function clearErrorMessage() {
   const errorContainer = document.getElementById('error-container');
   if (errorContainer) {
@@ -33,16 +51,18 @@ function clearErrorMessage() {
   }
 }
 
-document.getElementById('error-close-btn').addEventListener('click', () => {
-  document.getElementById('error-container').style.display = 'none';
-});
-
+/**
+ * Fetches weather data from the server and updates the global weatherData variable.
+ */
 async function fetchWeatherData() {
   const response = await fetch('/api/weather', {});
   const data = await response.json();
   weatherData = data;
 }
 
+/**
+ * Fetches station data from the server, processes it, and updates the UI accordingly.
+ */
 async function fetchStationData() {
   const response = await fetch('/api/stations', {
     headers: {
@@ -74,6 +94,9 @@ async function fetchStationData() {
   }
 }
 
+/**
+ * Populates the date dropdown with the next five days starting from the current date.
+ */
 for (let i = 0; i < 5; i += 1) {
   let formattedDate = currentDate.toLocaleDateString('en-GB', {
     day: 'numeric',
@@ -86,6 +109,9 @@ for (let i = 0; i < 5; i += 1) {
   currentDate.setDate(currentDate.getDate() + 1);
 }
 
+/**
+ * Populates the time select dropdown with hours from 5 AM to 12 AM.
+ */
 for (let hour = 5; hour <= 24; hour += 1) {
   const option = document.createElement('option');
   option.value = hour;
@@ -103,6 +129,9 @@ for (let hour = 5; hour <= 24; hour += 1) {
   timeSelect.appendChild(option);
 }
 
+/**
+ * Toggles the visibility of a section when the header is clicked.
+ */
 document.addEventListener('DOMContentLoaded', () => {
   const sections = [
     {
@@ -157,6 +186,11 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+/**
+ * Adds an event listener to the prediction form to handle its submission.
+ * Prevents the default form submission, collects the form data, and sends it to the server.
+ * Upon receiving a response, it updates the UI with the prediction result or an error message.
+ */
 document.getElementById('prediction-form').addEventListener('submit', function handleSubmit(event) {
   event.preventDefault();
   const dateValue = document.getElementById('date').value;
@@ -195,6 +229,9 @@ fetchStationData();
 fetchWeatherData();
 setInterval(fetchWeatherData, 1800000);
 
+/**
+ * Initialises the application once the DOM content is fully loaded.
+ */
 document.addEventListener('DOMContentLoaded', () => {
   const startInput = document.getElementById('start-input');
   const startSearchBox = new google.maps.places.SearchBox(startInput);
@@ -204,6 +241,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const ZOOM_LEVEL = 13;
 
+  /**
+   * Creates a marker on the map for a given station.
+   * @param {Object} station_info - The station information including latitude, longitude, and name.
+   * @param {Object} map - The Google Maps map object where the marker will be added.
+   * @returns {Object} The created Google Maps Marker object.
+   */
   function createMarker({ station_info: { latitude, longitude, name } }, map) {
     const marker = new google.maps.Marker({
       position: { lat: latitude, lng: longitude },
@@ -216,6 +259,11 @@ document.addEventListener('DOMContentLoaded', () => {
     return marker;
   }
 
+  /**
+   * Adds a click event listener to a marker that updates the UI with station and weather information.
+   * @param {Object} marker - The Google Maps Marker object to attach the listener to.
+   * @param {Object} stationData - The station data including station information and availability.
+   */
   function addMarkerClickListener(marker, { station_info: { name }, availability }) {
     const stationNameCell = document.getElementById('stationNameCell');
     const standAvailabilityCell = document.getElementById('standAvailabilityCell');
@@ -224,12 +272,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const weatherConditionCell = document.getElementById('weatherConditionCell');
 
     marker.addListener('click', () => {
-      const formattedName = name
-        .split(' ')
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-        .join(' ');
-
-      stationNameCell.innerHTML = `<strong>Station Name:</strong> ${formattedName}`;
+      stationNameCell.innerHTML = `<strong>Station Name:</strong> ${formatStationName(name)}`;
       standAvailabilityCell.innerHTML = `<strong>Available Stands:</strong> ${availability.available_bike_stands}`;
       bikeAvailabilityCell.innerHTML = `<strong>Available Bikes:</strong> ${availability.available_bikes}`;
 
@@ -247,6 +290,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  /**
+   * Initialises the Google Maps map, sets up directions services and renderers, and defines the usable area polygon.
+   */
   window.initMap = function initMap() {
     if (typeof google === 'undefined') {
       return;
@@ -326,6 +372,13 @@ document.addEventListener('DOMContentLoaded', () => {
       endSearchBox.setBounds(map.getBounds());
     });
 
+    /**
+     * Handles the selection of a location on the map, either as a start or end point.
+     * It checks if the selected location is within a predefined area and updates the map accordingly.
+     *
+     * @param {Object} place - The place object returned by the Google Maps API.
+     * @param {boolean} isStartLocation - Determines if the selected location is a start or end point.
+     */
     function handleLocationSelection(place, isStartLocation) {
       if (google.maps.geometry.poly.containsLocation(place.geometry.location, usableArea)) {
         if (isStartLocation) {
@@ -394,6 +447,11 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('page').appendChild(endInput);
   };
 
+  /**
+   * Finds the closest station to a given location.
+   * @param {google.maps.LatLng} location - The location to find the closest station to.
+   * @returns {Object} The closest station object.
+   */
   function findClosestStation(location) {
     let closestStation;
     let closestDistance = Infinity;
@@ -414,6 +472,13 @@ document.addEventListener('DOMContentLoaded', () => {
     return closestStation;
   }
 
+  /**
+   * Clears all routes from the map and calculates a new route based on the selected start and end locations.
+   * It first clears any existing error messages and routes on the map. Then, it retrieves the start and end locations
+   * from the search boxes. If both locations are selected and within the defined usable area, it calculates the walking
+   * route to the closest stations from the start and end locations, and the bicycling route between these two stations.
+   * Finally, it updates the UI with the best start and end stations.
+   */
   function calcRoute() {
     clearErrorMessage();
 
@@ -455,10 +520,12 @@ document.addEventListener('DOMContentLoaded', () => {
       directionsService1.route(request1, (response1, status1) => {
         if (status1 === 'OK') {
           directionsRenderer1.setDirections(response1);
+          clearErrorMessage();
 
           directionsService2.route(request2, (response2, status2) => {
             if (status2 === 'OK') {
               directionsRenderer2.setDirections(response2);
+              clearErrorMessage();
 
               const request3 = {
                 origin: response1.routes[0].legs[0].start_location,
@@ -469,6 +536,7 @@ document.addEventListener('DOMContentLoaded', () => {
               directionsService3.route(request3, (response3, status3) => {
                 if (status3 === 'OK') {
                   directionsRenderer3.setDirections(response3);
+                  clearErrorMessage();
                 } else {
                   displayErrorMessage(
                     'There was an error while trying to calculate the route. Please try again later.',
@@ -487,11 +555,10 @@ document.addEventListener('DOMContentLoaded', () => {
           );
         }
       });
-
       document.getElementById('bestStartStationCell').innerHTML =
-        `<strong>Best Start Station:</strong> ${bestStartStation.name}`;
+        `<strong>Best Start Station:</strong> ${formatStationName(bestStartStation.name)}`;
       document.getElementById('bestEndStationCell').innerHTML =
-        `<strong>Best End Station:</strong> ${bestEndStation.name}`;
+        `<strong>Best End Station:</strong> ${formatStationName(bestEndStation.name)}`;
     } else {
       displayErrorMessage(
         'There was an error while trying to calculate the route. Please try again later.',
