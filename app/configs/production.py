@@ -10,5 +10,8 @@ from .base import Config
 class ProductionConfig(Config):
     """Production-specific configuration variables."""
 
-    # Example: Enable strict transport security in production.
-    # STRICT_TRANSPORT_SECURITY = True
+    # Disable debugging in production.
+    DEBUG = False
+
+    # Disable the Flask interactive debugger.
+    USE_DEBUGGER = False
