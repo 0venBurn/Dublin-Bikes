@@ -17,14 +17,6 @@
                  <h1>Dublin Bikes Availability</h1>
             </header>
 
-            <!-- <section class="search-section">
-                <div class="search-location-container">
-                    <input id="start-input" class="controls" type="text" placeholder="Start Location">
-                    <input id="end-input" class="controls" type="text" placeholder="End Location">
-                    <button id="go-button">Route</button>
-                </div>
-            </section> -->
-
             <div class="main-section">
 
                 <div class="information-container">
@@ -41,19 +33,18 @@
                             </div> 
                     </section>
 
-
-
                     <section class="station-route-container">
                         <div class="find-route-container">
-                            <h2>Find Route</h2>
-                            <div class="search-inputs-container">
+                            <h2 id="find-route-toggle" class="section-header">Find Route <span class="toggle-indicator">+</span></h2>
+
+                            <div class="search-inputs-container" style="display:none;">
                                 <input id="start-input" class="controls" type="text" placeholder="Start Location">
                                 <input id="end-input" class="controls" type="text" placeholder="End Location">
-                                <button id="go-button">Route</button>
+                                <button id="go-button">Find Route</button>
                             </div>
                         </div>
 
-                        <div class="best-station-container">
+                        <div class="best-station-container" style="display:none;">
                             <h2>Best Station</h2>
                             <div class="best-station-info">
                                 <p id="bestStartStationCell">No route selected.</p>
@@ -64,8 +55,8 @@
 
                     <section class="prediction-section">
                         <div class="search-prediction-container">
-                            <h2>Bike Availability Prediction</h2>
-                            <div class="search-prediction-form">
+                            <h2 id="bike-prediction-toggle" class="section-header">Bike Availability Prediction <span class="toggle-indicator">+</span></h2>
+                            <div class="search-prediction-form" style="display:none;">
                                 <form action="/predict" method="post" id = "prediction-form">
                                     <label for = "date"></label>
                                     <select id="date" name="date">
@@ -85,7 +76,7 @@
                                         <!-- js insertions -->
                                     </select>
 
-                                    <button type = "submit">Predict</button>
+                                    <button type = "submit">Predict Availability</button>
                                 </form>
                             </div>
 
@@ -113,5 +104,6 @@
             type="module"
             src="{{ url_for('static', filename='js/main.js') }}"
         ></script>
+
     </body>
 </html>

@@ -97,6 +97,49 @@ for (let hour = 5; hour <= 24; hour++) {
   // Append the option to the select
   timeSelect.appendChild(option);
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  const sections = [
+    { toggleId: 'find-route-toggle', containerSelector: '.find-route-container .search-inputs-container', additionalSelector: '.best-station-container' },
+    { toggleId: 'bike-prediction-toggle', containerSelector: '.search-prediction-form', additionalSelector: '.prediction-results-container' }
+  ];
+
+  sections.forEach(section => {
+    const header = document.getElementById(section.toggleId);
+    const container = document.querySelector(section.containerSelector);
+    const additionalContainer = section.additionalSelector ? document.querySelector(section.additionalSelector) : null;
+    const indicator = header.querySelector('.toggle-indicator');
+
+    header.addEventListener('click', () => {
+      // Collapse any currently expanded sections except the one being toggled
+      sections.forEach(sec => {
+        if (sec.toggleId !== section.toggleId) {
+          const otherContainer = document.querySelector(sec.containerSelector);
+          const otherIndicator = document.getElementById(sec.toggleId).querySelector('.toggle-indicator');
+          otherContainer.style.display = 'none';
+          if (otherIndicator) {
+            otherIndicator.textContent = '+';
+          }
+          if (sec.additionalSelector) {
+            const otherAdditionalContainer = document.querySelector(sec.additionalSelector);
+            if (otherAdditionalContainer) {
+              otherAdditionalContainer.style.display = 'none';
+            }
+          }
+        }
+      });
+
+      // Toggle the clicked section
+      const isHidden = container.style.display === 'none' || !container.style.display;
+      container.style.display = isHidden ? 'flex' : 'none';
+      if (additionalContainer) {
+        additionalContainer.style.display = isHidden ? 'flex' : 'none';
+      }
+      indicator.textContent = isHidden ? '-' : '+';
+    });
+  });
+});
+
 document.getElementById('prediction-form').addEventListener('submit', function(event) {
   event.preventDefault();
 
@@ -183,32 +226,37 @@ document.addEventListener('DOMContentLoaded', () => {
    * @param {string} station.station_info.name - The name of the station.
    * @param {Object} station.availability - The availability data for the station.
    */
-  function addMarkerClickListener(marker, { station_info: { name }, availability }) {
-    const stationNameCell = document.getElementById('stationNameCell');
-    const standAvailabilityCell = document.getElementById('standAvailabilityCell');
-    const bikeAvailabilityCell = document.getElementById('bikeAvailabilityCell');
-    const temperatureCell = document.getElementById('temperatureCell');
-    const weatherConditionCell = document.getElementById('weatherConditionCell');
+function addMarkerClickListener(marker, { station_info: { name }, availability }) {
+  const stationNameCell = document.getElementById('stationNameCell');
+  const standAvailabilityCell = document.getElementById('standAvailabilityCell');
+  const bikeAvailabilityCell = document.getElementById('bikeAvailabilityCell');
+  const temperatureCell = document.getElementById('temperatureCell');
+  const weatherConditionCell = document.getElementById('weatherConditionCell');
 
-    marker.addListener('click', () => {
-      stationNameCell.innerHTML = `<strong>Station Name:</strong> ${name}`;
-      standAvailabilityCell.innerHTML = `<strong>Available Stands:</strong> ${availability.available_bike_stands}`;
-      bikeAvailabilityCell.innerHTML = `<strong>Available Bikes:</strong> ${availability.available_bikes}`;
+  marker.addListener('click', () => {
+    // Split the name into words, capitalize the first letter of each, and join them back
+    const formattedName = name
+      .split(' ')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+    stationNameCell.innerHTML = `<strong>Station Name:</strong> ${formattedName}`;
+    standAvailabilityCell.innerHTML = `<strong>Available Stands:</strong> ${availability.available_bike_stands}`;
+    bikeAvailabilityCell.innerHTML = `<strong>Available Bikes:</strong> ${availability.available_bikes}`;
 
-      const roundedTemp = Math.round(weatherData.weather_info.Temperature);
-      temperatureCell.innerHTML = `<strong>Temperature:</strong> ${roundedTemp}°C`;
-      weatherConditionCell.innerHTML = `<strong>Condition:</strong> ${weatherData.weather_info.Condition}`;
+    const roundedTemp = Math.round(weatherData.weather_info.Temperature);
+    temperatureCell.innerHTML = `<strong>Temperature:</strong> ${roundedTemp}°C`;
+    weatherConditionCell.innerHTML = `<strong>Condition:</strong> ${weatherData.weather_info.Condition}`;
 
-      // Adjust marker opacities: selected marker becomes fully opaque, others less opaque
-      allMarkers.forEach(m => {
-        if (m === marker) {
-          m.setOpacity(1.0); // Selected marker
-        } else {
-          m.setOpacity(0.5); // Other markers
-        }
-      });
+    // Adjust marker opacities: selected marker becomes fully opaque, others less opaque
+    allMarkers.forEach((m) => {
+      if (m === marker) {
+        m.setOpacity(1.0); // Selected marker
+      } else {
+        m.setOpacity(0.5); // Other markers
+      }
     });
-  }
+  });
+}
 
   /**
    * Initialises the Google Maps map and adds markers for each station.
