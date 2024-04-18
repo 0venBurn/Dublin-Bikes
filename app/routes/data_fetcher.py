@@ -32,7 +32,7 @@ def serialize_datetime(dt: Any) -> Any:
     return dt.strftime("%Y-%m-%d %H:%M:%S")
 
 
-def get_latest_weather_data():
+def get_latest_weather_data() -> Any:
     """Fetches the latest weather data from the database.
 
     Queries the database for the most recent weather data entry, formats it into a
@@ -86,7 +86,7 @@ def get_latest_weather_data():
             return json.dumps({})
 
 
-def get_stations_data():
+def get_stations_data() -> Any:
     """Fetches data for all stations from the database.
 
     Queries the database for all station entries, including their latest availability

@@ -127,9 +127,3 @@ warn_redundant_casts = true
 warn_unreachable = true
 warn_unused_configs = true
 warn_unused_ignores = true
-
-# --- Coverage Configuration -------------------------------------------------
-# TODO: Add coverage configuration.
-
-# --- Pytest Configuration ---------------------------------------------------
-# TODO: Add pytest configuration.

@@ -1,7 +1,7 @@
-"""This module initialises the Flask application.
+"""
+This module serves as the entry point for the Flask application.
 
-It is responsible for loading environment variables, initialising the Flask application with its configurations
-and starting the Flask server with options based on the  configuration settings.
+It is responsible for loading environment variables, initialising the Flask application with its configurations, and starting the Flask server.
 """
 
 from dotenv import load_dotenv
@@ -17,4 +17,4 @@ app = create_app()
 
 if __name__ == "__main__":
     # Start the Flask application with configuration settings for host and port.
-    app.run(debug=app.config["DEBUG"], host=app.config["HOST"], port=app.config["PORT"])
+    app.run(debug=True, host="0.0.0.0", port=5000)  # noqa: S104

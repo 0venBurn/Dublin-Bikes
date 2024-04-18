@@ -1,3 +1,4 @@
+/* eslint-disable prefer-const */
 /* global google */
 let stationsData;
 let startMarkers = [];
@@ -90,6 +91,7 @@ async function fetchStationData() {
   });
 
   if (typeof google !== 'undefined') {
+    // eslint-disable-next-line no-undef
     initMap();
   }
 }

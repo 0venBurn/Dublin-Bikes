@@ -6,9 +6,8 @@ from .base import Config
 class ProductionConfig(Config):
     """Configuration class for production environment."""
 
-    DEBUG: bool = False
+    # Disable debugging in production.
+    DEBUG = False
 
-    HOST: str = (
-        "0.0.0.0"  # Change this to the deployment server's IP address.  # noqa: S104
-    )
-    PORT: int = 80  # Standard HTTP port.
+    # Disable the Flask interactive debugger.
+    USE_DEBUGGER = False

@@ -1,5 +1,4 @@
-"""
-Web scraping API for Bike Stations.
+"""Web scraping API for Bike Stations.
 
 This script fetches data from an API, validates it against a JSON schema,
 and writes the data to a MySQL database.

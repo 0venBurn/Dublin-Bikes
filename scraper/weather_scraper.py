@@ -1,11 +1,7 @@
-"""
-This module contains functions to scrape weather data from an API and insert it into a MySQL database.
+"""Web scraping API for weather data.
 
-Functions:
-- get_weather_data: Fetches weather data from the API.
-- connect_to_database: Connects to the MySQL database.
-- create_and_insert_weather_data: Creates a table in the database and inserts the weather data.
-
+This script fetches data from an API, validates it against a JSON schema, and
+inserts it into a MySQL database.
 """
 
 from __future__ import annotations
@@ -46,7 +42,7 @@ host = os.getenv("HOST")
 SUCCESS_STATUS_CODE = 200
 
 
-# JSON schema for weather data
+# JSON schema for weather data to validate against.
 weather_data_schema = {
     "type": "object",
     "properties": {
@@ -281,11 +277,12 @@ def connect_to_database() -> sqlalchemy.engine.base.Engine | None:
     connection_string = (
         f"mysql+mysqlconnector://{db_username}:{db_password}@{host}/{db}"
     )
+
     try:
         return create_engine(connection_string)
     except sqlalchemy.exc.OperationalError as e:
         print(f"Error connecting to database: {e}")
-    return None  # type: ignore  # noqa: PGH003
+    return None  # type: ignore
 
 
 def create_and_insert_weather_data(
@@ -295,8 +292,8 @@ def create_and_insert_weather_data(
     Creates a table in the database and inserts the weather data.
 
     Args:
-        engine (sqlalchemy.engine.base.Engine): The database engine.
-        data (dict): The weather data to insert.
+        engine(sqlalchemy.engine.base.Engine): The database engine.
+        data(dict): The weather data to insert.
 
     Returns:
         None
