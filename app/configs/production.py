@@ -1,14 +1,10 @@
-"""
-This module defines the production-specific configurations for the Flask application.
-
-It inherits from the base configuration and overrides or extends it as necessary.
-"""
+"""Configuration class for production environment."""
 
 from .base import Config
 
 
 class ProductionConfig(Config):
-    """Production-specific configuration variables."""
+    """Configuration class for production environment."""
 
     # Disable debugging in production.
     DEBUG = False

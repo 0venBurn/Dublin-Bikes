@@ -1,13 +1,9 @@
-"""
-This module defines the development-specific configurations for the Flask application.
-
-It inherits from the base configuration and overrides or extends it as necessary for development.
-"""
+"""Development-specific configurations for the Flask application."""
 
 from .base import Config
 
 
 class DevelopmentConfig(Config):
-    """Development-specific configuration variables."""
+    """Configuration class for development environment."""
 
     DEBUG = True

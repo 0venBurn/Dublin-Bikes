@@ -1,14 +1,10 @@
-"""
-This module defines the base configuration for the Flask application.
-
-It includes configurations that are common across all environments.
-"""
+"""This module defines the base configuration for the application."""
 
 import os
 
 
 class Config:
-    """Base configuration variables."""
+    """Configuration class to set up environment variables and database URI."""
 
     # Environment variables are used for configuration to enhance security and flexibility.
     USERNAME = os.getenv("DB_USERNAME")
