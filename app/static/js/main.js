@@ -9,8 +9,7 @@ let directionsService3;
 let directionsRenderer3;
 let stationsDataList = [];
 let weatherData;
-
-
+let allMarkers = []; // Array to store all station markers for opacity adjustment
 
 // Function to fetch weather data
 async function fetchWeatherData() {
@@ -127,7 +126,7 @@ document.getElementById('prediction-form').addEventListener('submit', function(e
     })
     .catch(error => {
         console.error('Error:', error);
-        document.getElementById('resultsBox').style.display = 'block'; // Show error in results box
+        // document.getElementById('resultsBox').style.display = 'block'; // Show error in results box
     });
 });
 
@@ -166,15 +165,13 @@ document.addEventListener('DOMContentLoaded', () => {
    * @returns {Object} The created Google Maps Marker object.
    */
   function createMarker({ station_info: { latitude, longitude, name } }, map) {
-    return new google.maps.Marker({
+    const marker = new google.maps.Marker({
       position: { lat: latitude, lng: longitude },
       map,
       title: name,
       opacity: 0.75
     });
-
-    allMarkers.push(marker); // Add the marker to the array of all markers
-
+    allMarkers.push(marker); // Store the marker
     return marker;
   }
 
@@ -201,6 +198,15 @@ document.addEventListener('DOMContentLoaded', () => {
       const roundedTemp = Math.round(weatherData.weather_info.Temperature);
       temperatureCell.innerHTML = `<strong>Temperature:</strong> ${roundedTemp}°C`;
       weatherConditionCell.innerHTML = `<strong>Condition:</strong> ${weatherData.weather_info.Condition}`;
+
+      // Adjust marker opacities: selected marker becomes fully opaque, others less opaque
+      allMarkers.forEach(m => {
+        if (m === marker) {
+          m.setOpacity(1.0); // Selected marker
+        } else {
+          m.setOpacity(0.5); // Other markers
+        }
+      });
     });
   }
 

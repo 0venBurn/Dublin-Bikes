@@ -14,77 +14,95 @@
     <body>
         <main>
             <header>
-                <h1>Dublin Bikes Availability</h1>
+                 <h1>Dublin Bikes Availability</h1>
             </header>
 
-            <section class="search-section">
+            <!-- <section class="search-section">
                 <div class="search-location-container">
                     <input id="start-input" class="controls" type="text" placeholder="Start Location">
                     <input id="end-input" class="controls" type="text" placeholder="End Location">
                     <button id="go-button">Route</button>
                 </div>
-            </section>
+            </section> -->
 
-            <section class="prediction-section">
-                <div class="search-prediction-container">
+            <div class="main-section">
 
-                    <div class="search-prediction-form">
-                        <form action="/predict" method="post" id = "prediction-form">
-                            <label for = "date"></label>
-                            <select id="date" name="date">
-                                <option value="" disabled selected>Date</option>
-                                <!-- js insertions -->
-                            </select>
-
-                            <label for = "time"></label>
-                            <select id="time" name="time">
-                                <option value="" disabled selected>Time</option>
-                                <!-- js insertions -->
-                            </select>
-
-                            <label for = "station"></label>
-                            <select id="station" name="station">
-                                <option value="" disabled selected>Station</option>
-                                <!-- js insertions -->
-                            </select>
-
-                            <button type = "submit">Predict</button>
-                        </form>
-                    </div>
-
-                    <div class="prediction-results-container" id="resultsBox" style="display: none;">
-                        <p id="predictionText"></p>
-                    </div>
-
-                </div>
-            </section>
-
-            <section class="main-section">
                 <div class="information-container">
-                    <div class="station-info-container">
-                        <h2>Selected Station</h2>
-                            <div class="station-info">
-                                <p id="stationNameCell">No station selected.</p>
-                                <p id="temperatureCell"></p>
-                                <p id="weatherConditionCell"></p>
-                                <p id="standAvailabilityCell"></p>
-                                <p id="bikeAvailabilityCell"></p>
+                    <section class="station-info-container">
+                        <div class="selected-station-container">
+                            <h2>Selected Station</h2>
+                                <div class="station-info">
+                                    <p id="stationNameCell">No station selected.</p>
+                                    <p id="temperatureCell"></p>
+                                    <p id="weatherConditionCell"></p>
+                                    <p id="standAvailabilityCell"></p>
+                                    <p id="bikeAvailabilityCell"></p>
+                                </div>
+                            </div> 
+                    </section>
+
+
+
+                    <section class="station-route-container">
+                        <div class="find-route-container">
+                            <h2>Find Route</h2>
+                            <div class="search-inputs-container">
+                                <input id="start-input" class="controls" type="text" placeholder="Start Location">
+                                <input id="end-input" class="controls" type="text" placeholder="End Location">
+                                <button id="go-button">Route</button>
                             </div>
-                    </div>
-
-                    <div class="best-station-container">
-                        <h2>Best Station</h2>
-                        <div class="best-station-info">
-                            <p id="bestStartStationCell">No route selected.</p>
-                            <p id="bestEndStationCell"></p>
                         </div>
-                    </div>
+
+                        <div class="best-station-container">
+                            <h2>Best Station</h2>
+                            <div class="best-station-info">
+                                <p id="bestStartStationCell">No route selected.</p>
+                                <p id="bestEndStationCell"></p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="prediction-section">
+                        <div class="search-prediction-container">
+                            <h2>Bike Availability Prediction</h2>
+                            <div class="search-prediction-form">
+                                <form action="/predict" method="post" id = "prediction-form">
+                                    <label for = "date"></label>
+                                    <select id="date" name="date">
+                                        <option value="" disabled selected>Date</option>
+                                        <!-- js insertions -->
+                                    </select>
+
+                                    <label for = "time"></label>
+                                    <select id="time" name="time">
+                                        <option value="" disabled selected>Time</option>
+                                        <!-- js insertions -->
+                                    </select>
+
+                                    <label for = "station"></label>
+                                    <select id="station" name="station">
+                                        <option value="" disabled selected>Station</option>
+                                        <!-- js insertions -->
+                                    </select>
+
+                                    <button type = "submit">Predict</button>
+                                </form>
+                            </div>
+
+                            <div class="prediction-results-container" id="resultsBox" style="display: none;">
+                                <p id="predictionText"></p>
+                            </div>
+
+                        </div>
+                    </section>
                 </div>
 
-                <div id="map" class="map-container">
-                    <!-- Map will be loaded here -->
+                <div class="map-window-container">
+                    <div id="map" class="map-container">
+                        <!-- Map will be loaded here -->
+                    </div>
                 </div>
-            </section>
+            </div>
         </main>
         
         <script
