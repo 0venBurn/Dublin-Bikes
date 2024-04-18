@@ -1,2 +1,1 @@
-"""This module contains the routes for the application."""
-
+"""This module initialises the routes package."""
