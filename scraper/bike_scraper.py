@@ -1,5 +1,5 @@
 """
-Web scraping API, Creates Database and then writes to Database in intervals.
+Web scraping API for Bike Stations.
 
 This script fetches data from an API, validates it against a JSON schema,
 and writes the data to a MySQL database. It consists of several functions
@@ -302,3 +302,4 @@ if engine:
     if data:
         write_to_station_table(session, station_table, data)
         write_to_availability_table(session, availability_table, data)
+
