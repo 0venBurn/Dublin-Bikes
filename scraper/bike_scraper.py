@@ -278,7 +278,7 @@ engine = create_connection()
 # If connection is successful, create the tables and create session.
 if engine:
     station_table, availability_table = create_tables(engine)
-    session_maker = sessionmaker(bind=engine)  # type: ignore
+    session_maker = sessionmaker(bind=engine)
     session = session_maker()
 
     # If there is data, write it to the station and availability table in the database.

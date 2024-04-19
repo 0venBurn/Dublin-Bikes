@@ -123,8 +123,6 @@ def predict():  # noqa: PLR0914
     numeric_features = ["Temperature", "WindSpeed", "day", "hour", "month", "year"]  # noqa: F841
     categorical_features = ["number"]  # noqa: F841
 
-    print(df_predict)
-
     with Path("app/preprocessor.pkl").open("rb") as f:
         preprocessor = pickle.load(f)  # noqa: S301
 
@@ -132,6 +130,5 @@ def predict():  # noqa: PLR0914
     prediction = model.predict(x_new)
     rounded_prediction = np.round(prediction)
     prediction_result = int(rounded_prediction[0][0])
-    print(prediction_result)
 
     return jsonify({"prediction": prediction_result})
