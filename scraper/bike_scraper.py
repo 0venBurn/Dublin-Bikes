@@ -142,6 +142,7 @@ def create_connection() -> Engine | None:
         return create_engine(connection_string)
     except sqlalchemy.exc.OperationalError:
         logging.exception("Error connecting to database.")
+        print("error")
         return None
 
 
