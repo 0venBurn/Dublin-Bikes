@@ -41,7 +41,7 @@ def create_app():
     elif env == "development":
         app.config.from_object(DevelopmentConfig)
     else:
-        app.config.from_object(Config)
+        app.config.from_object(ProductionConfig)
 
     # Enable CORS for the entire application.
     CORS(app)
