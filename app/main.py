@@ -29,7 +29,7 @@ enc = OneHotEncoder(handle_unknown="ignore")
 
 load_dotenv()
 
-model = load_model("app/ml_model.h5", custom_objects={})
+model = load_model("ml/ml_model.h5", custom_objects={})
 api_key = os.getenv("FIVE_DAY_URL")
 if api_key is None:
     msg = "Api key not set in .env"
@@ -131,7 +131,7 @@ def predict():  # noqa: PLR0914
     numeric_features = ["Temperature", "WindSpeed", "day", "hour", "month", "year"]  # noqa: F841
     categorical_features = ["number"]  # noqa: F841
 
-    with Path("app/preprocessor.pkl").open("rb") as f:
+    with Path("ml/preprocessor.pkl").open("rb") as f:
         preprocessor = pickle.load(f)  # noqa: S301
 
     x_new = preprocessor.transform(df_predict)
