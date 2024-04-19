@@ -17,4 +17,4 @@ app = create_app()
 
 if __name__ == "__main__":
     # Start the Flask application with configuration settings for host and port.
-    app.run(debug=True, host="0.0.0.0", port=5000)  # noqa: S104
+    app.run()
