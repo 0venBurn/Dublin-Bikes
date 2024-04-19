@@ -42,9 +42,6 @@ host = os.getenv("HOST")
 SUCCESS_STATUS_CODE = 200
 
 
-
-
-
 # JSON schema for weather data
 weather_data_schema = {
     "type": "object",
