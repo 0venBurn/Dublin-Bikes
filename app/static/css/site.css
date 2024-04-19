@@ -349,7 +349,7 @@ header h1 {
 }
 
 .selected-station-container,
-.best-station-container,
+.nearest-station-container,
 .find-route-container,
 .search-prediction-container {
   background: var(--color-background-primary);

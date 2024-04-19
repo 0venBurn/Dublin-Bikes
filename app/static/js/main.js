@@ -1,5 +1,6 @@
 /* eslint-disable prefer-const */
 /* global google */
+let map;
 let stationsData;
 let startMarkers = [];
 let endMarkers = [];
@@ -18,14 +19,33 @@ const dateDropdown = document.getElementById('date');
 const timeSelect = document.getElementById('time');
 
 /**
- * Formats the station name to have each word start with an uppercase letter.
+ * Formats the station name to have each word start with an uppercase letter, including special characters.
  * @param {string} name - The station name to format.
  * @returns {string} The formatted station name.
  */
 function formatStationName(name) {
   return name
     .split(' ')
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .map((word) => {
+      let formattedWord = word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+
+      const capitalizeAfterChar = (capitalisedWord, char) => {
+        const charIndex = capitalisedWord.indexOf(char);
+        if (charIndex !== -1 && charIndex < capitalisedWord.length - 1) {
+          return (
+            capitalisedWord.substring(0, charIndex + 1) +
+            capitalisedWord.charAt(charIndex + 1).toUpperCase() +
+            capitalisedWord.substring(charIndex + 2)
+          );
+        }
+        return capitalisedWord;
+      };
+
+      formattedWord = capitalizeAfterChar(formattedWord, "'");
+      formattedWord = capitalizeAfterChar(formattedWord, '(');
+
+      return formattedWord;
+    })
     .join(' ');
 }
 
@@ -91,7 +111,6 @@ async function fetchStationData() {
   });
 
   if (typeof google !== 'undefined') {
-    // eslint-disable-next-line no-undef
     initMap();
   }
 }
@@ -139,7 +158,7 @@ document.addEventListener('DOMContentLoaded', () => {
     {
       toggleId: 'find-route-toggle',
       containerSelector: '.find-route-container .search-inputs-container',
-      additionalSelector: '.best-station-container',
+      additionalSelector: '.nearest-station-container',
     },
     {
       toggleId: 'bike-prediction-toggle',
@@ -249,7 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
    * @param {Object} map - The Google Maps map object where the marker will be added.
    * @returns {Object} The created Google Maps Marker object.
    */
-  function createMarker({ station_info: { latitude, longitude, name } }, map) {
+  function createMarker({ station_info: { latitude, longitude, name } }) {
     const marker = new google.maps.Marker({
       position: { lat: latitude, lng: longitude },
       map,
@@ -301,52 +320,28 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const location = { lat: 53.349804, lng: -6.26031 };
-    const map = new google.maps.Map(document.getElementById('map'), {
+    map = new google.maps.Map(document.getElementById('map'), {
       zoom: ZOOM_LEVEL,
       center: location,
     });
 
     directionsService1 = new google.maps.DirectionsService();
     directionsRenderer1 = new google.maps.DirectionsRenderer({
-      markerOptions: {
-        icon: {
-          url: 'https://i.ibb.co/5x0f0Sw/markerA.png',
-          scaledSize: new google.maps.Size(32, 32),
-          origin: new google.maps.Point(0, 0),
-          anchor: new google.maps.Point(16, 32),
-          interactive: false,
-        },
-      },
+      suppressMarkers: true,
     });
 
     directionsRenderer1.setMap(map);
 
     directionsService2 = new google.maps.DirectionsService();
     directionsRenderer2 = new google.maps.DirectionsRenderer({
-      markerOptions: {
-        icon: {
-          url: 'https://i.ibb.co/5x0f0Sw/markerA.png',
-          scaledSize: new google.maps.Size(32, 32),
-          origin: new google.maps.Point(0, 0),
-          anchor: new google.maps.Point(16, 32),
-          interactive: false,
-        },
-      },
+      suppressMarkers: true,
     });
 
     directionsRenderer2.setMap(map);
 
     directionsService3 = new google.maps.DirectionsService();
     directionsRenderer3 = new google.maps.DirectionsRenderer({
-      markerOptions: {
-        icon: {
-          url: 'https://i.ibb.co/5x0f0Sw/markerA.png',
-          scaledSize: new google.maps.Size(32, 32),
-          origin: new google.maps.Point(0, 0),
-          anchor: new google.maps.Point(16, 32),
-          interactive: false,
-        },
-      },
+      suppressMarkers: true,
     });
     directionsRenderer3.setMap(map);
 
@@ -374,6 +369,30 @@ document.addEventListener('DOMContentLoaded', () => {
       endSearchBox.setBounds(map.getBounds());
     });
 
+    directionsRenderer1.setOptions({
+      polylineOptions: {
+        strokeColor: '#E91E63',
+        strokeOpacity: 0.8,
+        strokeWeight: 5,
+      },
+    });
+
+    directionsRenderer2.setOptions({
+      polylineOptions: {
+        strokeColor: '#E91E63',
+        strokeOpacity: 0.8,
+        strokeWeight: 5,
+      },
+    });
+
+    directionsRenderer3.setOptions({
+      polylineOptions: {
+        strokeColor: '#4285F4',
+        strokeOpacity: 0.8,
+        strokeWeight: 5,
+      },
+    });
+
     /**
      * Handles the selection of a location on the map, either as a start or end point.
      * It checks if the selected location is within a predefined area and updates the map accordingly.
@@ -384,19 +403,17 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleLocationSelection(place, isStartLocation) {
       if (google.maps.geometry.poly.containsLocation(place.geometry.location, usableArea)) {
         if (isStartLocation) {
-          startMarkers.forEach((marker) => {
-            marker.setMap(null);
-          });
+          startMarkers.forEach((marker) => marker.setMap(null));
+          startMarkers = [];
         } else {
-          endMarkers.forEach((marker) => {
-            marker.setMap(null);
-          });
+          endMarkers.forEach((marker) => marker.setMap(null));
+          endMarkers = [];
         }
 
         const markerIcon = {
           url: isStartLocation
-            ? 'https://maps.google.com/mapfiles/ms/icons/green-dot.png'
-            : 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png',
+            ? 'https://maps.google.com/mapfiles/ms/icons/purple-dot.png'
+            : 'https://maps.google.com/mapfiles/ms/icons/pink-dot.png',
           scaledSize: new google.maps.Size(32, 32),
           origin: new google.maps.Point(0, 0),
           anchor: new google.maps.Point(16, 32),
@@ -408,13 +425,12 @@ document.addEventListener('DOMContentLoaded', () => {
           icon: markerIcon,
         });
 
-        map.setCenter(place.geometry.location);
-
         if (isStartLocation) {
           startMarkers.push(marker);
         } else {
           endMarkers.push(marker);
         }
+        map.setCenter(place.geometry.location);
       } else {
         displayErrorMessage('Please select a location within Dublin city.');
       }
@@ -474,12 +490,37 @@ document.addEventListener('DOMContentLoaded', () => {
     return closestStation;
   }
 
+  function placeBikeMarker(location) {
+    const marker = new google.maps.Marker({
+      position: location,
+      map,
+      icon: {
+        // Source: https://notionicons.simple.ink/
+        url: 'data:image/svg+xml;charset=utf-8;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0NCIgaGVpZ2h0PSI0NCIgZmlsbD0iIzE3NGVhNiIgY2xhc3M9ImJpIGJpLWJpY3ljbGUiIHZpZXdCb3g9IjAgMCAxNiAxNiIgaWQ9Imljb24tYmljeWNsZS0wIj48cGF0aCBkPSJNNCA0LjVhLjUuNSAwIDAgMSAuNS0uNUg2YS41LjUgMCAwIDEgMCAxdi41aDQuMTRsLjM4Ni0xLjE1OEEuNS41IDAgMCAxIDExIDRoMWEuNS41IDAgMCAxIDAgMWgtLjY0bC0uMzExLjkzNS44MDcgMS4yOWEzIDMgMCAxIDEtLjg0OC41M2wtLjUwOC0uODEyLTIuMDc2IDMuMzIyQS41LjUgMCAwIDEgOCAxMC41SDUuOTU5YTMgMyAwIDEgMS0xLjgxNS0zLjI3NEw1IDUuODU2VjVoLS41YS41LjUgMCAwIDEtLjUtLjV6bTEuNSAyLjQ0My0uNTA4LjgxNGMuNS40NDQuODUgMS4wNTQuOTY3IDEuNzQzaDEuMTM5TDUuNSA2Ljk0M3pNOCA5LjA1NyA5LjU5OCA2LjVINi40MDJMOCA5LjA1N3pNNC45MzcgOS41YTEuOTk3IDEuOTk3IDAgMCAwLS40ODctLjg3N2wtLjU0OC44NzdoMS4wMzV6TTMuNjAzIDguMDkyQTIgMiAwIDEgMCA0LjkzNyAxMC41SDNhLjUuNSAwIDAgMS0uNDI0LS43NjVsMS4wMjctMS42NDN6bTcuOTQ3LjUzYTIgMiAwIDEgMCAuODQ4LS41M2wxLjAyNiAxLjY0M2EuNS41IDAgMSAxLS44NDguNTNMMTEuNTUgOC42MjN6Ij48L3BhdGg+PC9zdmc+',
+        scaledSize: new google.maps.Size(32, 32),
+        origin: new google.maps.Point(0, 0),
+        anchor: new google.maps.Point(32, 32),
+        clickable: false,
+      },
+    });
+    startMarkers.push(marker); // Keep track of the marker
+  }
+
+  /**
+   * Adjusts the opacity of all markers on the map.
+   */
+  function adjustAllMarkersOpacity() {
+    allMarkers.forEach((marker) => {
+      marker.setOpacity(0.5);
+    });
+  }
+
   /**
    * Clears all routes from the map and calculates a new route based on the selected start and end locations.
    * It first clears any existing error messages and routes on the map. Then, it retrieves the start and end locations
    * from the search boxes. If both locations are selected and within the defined usable area, it calculates the walking
    * route to the closest stations from the start and end locations, and the bicycling route between these two stations.
-   * Finally, it updates the UI with the best start and end stations.
+   * Finally, it updates the UI with the best (closest) start and end stations.
    */
   function calcRoute() {
     clearErrorMessage();
@@ -514,9 +555,15 @@ document.addEventListener('DOMContentLoaded', () => {
       };
 
       const request2 = {
-        origin: endLocation,
-        destination: new google.maps.LatLng(bestEndStation.latitude, bestEndStation.longitude),
+        origin: new google.maps.LatLng(bestEndStation.latitude, bestEndStation.longitude),
+        destination: endLocation,
         travelMode: 'WALKING',
+      };
+
+      const request3 = {
+        origin: new google.maps.LatLng(bestStartStation.latitude, bestStartStation.longitude),
+        destination: new google.maps.LatLng(bestEndStation.latitude, bestEndStation.longitude),
+        travelMode: 'BICYCLING',
       };
 
       directionsService1.route(request1, (response1, status1) => {
@@ -527,17 +574,13 @@ document.addEventListener('DOMContentLoaded', () => {
           directionsService2.route(request2, (response2, status2) => {
             if (status2 === 'OK') {
               directionsRenderer2.setDirections(response2);
+              placeBikeMarker(response2.routes[0].legs[0].start_location);
               clearErrorMessage();
-
-              const request3 = {
-                origin: response1.routes[0].legs[0].start_location,
-                destination: response2.routes[0].legs[0].end_location,
-                travelMode: 'BICYCLING',
-              };
 
               directionsService3.route(request3, (response3, status3) => {
                 if (status3 === 'OK') {
                   directionsRenderer3.setDirections(response3);
+                  placeBikeMarker(response3.routes[0].legs[0].start_location);
                   clearErrorMessage();
                 } else {
                   displayErrorMessage(
@@ -557,10 +600,11 @@ document.addEventListener('DOMContentLoaded', () => {
           );
         }
       });
-      document.getElementById('bestStartStationCell').innerHTML =
-        `<strong>Best Start Station:</strong> ${formatStationName(bestStartStation.name)}`;
-      document.getElementById('bestEndStationCell').innerHTML =
-        `<strong>Best End Station:</strong> ${formatStationName(bestEndStation.name)}`;
+      adjustAllMarkersOpacity();
+      document.getElementById('nearestStartStationCell').innerHTML =
+        `<strong>Nearest Start Station:</strong> ${formatStationName(bestStartStation.name)}`;
+      document.getElementById('nearestEndStationCell').innerHTML =
+        `<strong>Nearest End Station:</strong> ${formatStationName(bestEndStation.name)}`;
     } else {
       displayErrorMessage(
         'There was an error while trying to calculate the route. Please try again later.',
