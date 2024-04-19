@@ -20,7 +20,7 @@ from dotenv import load_dotenv
 from flask import Blueprint, jsonify, render_template, request
 from flask_cors import CORS
 from sklearn.preprocessing import OneHotEncoder
-from tensorflow.keras.models import load_model
+from tensorflow.keras.models import load_model  # type: ignore
 
 from .routes.data_fetcher import get_latest_weather_data, get_stations_data
 
@@ -118,7 +118,15 @@ def predict():  # noqa: PLR0914
         "day": [day],
         "hour": [hour],
     })
-    df_predict = df_predict.astype(int)
+    df_predict = df_predict.astype({
+        "number": "int64",
+        "Temperature": "float64",
+        "WindSpeed": "float64",
+        "year": "int64",
+        "month": "int64",
+        "day": "int64",
+        "hour": "int64",
+    })
 
     numeric_features = ["Temperature", "WindSpeed", "day", "hour", "month", "year"]  # noqa: F841
     categorical_features = ["number"]  # noqa: F841
