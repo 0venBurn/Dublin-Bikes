@@ -1,5 +1,4 @@
-"""
-This module provides extensions that are used throughout the application.
+"""This module provides centralised initialisation of the extensions used by the application.
 
 It includes the creation and configuration of the 'db' instance, which is
 used to interact with the database.

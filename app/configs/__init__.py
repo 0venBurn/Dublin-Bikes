@@ -1,1 +1,1 @@
-"""Initialise the configs package."""
+"""This module initialises the configs package."""

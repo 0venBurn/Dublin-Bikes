@@ -1,15 +1,16 @@
 """
-This module defines the Weather model which represents weather data in the database.
+This module defines the Weather model.
 
-Classes:
-    Weather: A database model representing the weather conditions for a specific date and station.
+The Weather model represents the weather data including temperature, humidity,
+wind speed, a general condition of the weather, and a detailed description of the
+weather condition, amongst other details.
 """
 
 from app.extensions import db
 
 
 class Weather(db.Model):  # type: ignore
-    """Model for weather data."""
+    """Represents weather data."""
 
     __tablename__ = "weather"
 

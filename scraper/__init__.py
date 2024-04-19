@@ -1,1 +1,1 @@
-"""Initialise the scraper package."""
+"""This module initialises the scraper package."""

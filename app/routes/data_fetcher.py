@@ -1,21 +1,13 @@
-"""Data fetcher module for querying and formatting weather and station data.
+"""Module for fetching data from the database.
 
-This module contains functions that interact with the database to fetch and
-format data related to weather conditions and station availabilities. It handles
-exceptions by logging them and returning default empty structures (either
-dictionaries or lists) depending on the function.
-
-Functions:
-    get_latest_weather_data:
-        Fetches and returns the latest weather data in a formatted dictionary.
-
-    get_stations_data:
-        Fetches and returns a list of dictionaries, each containing data for a
-        single station.
+This module contains functions for fetching weather and station data from the database.
+It includes functionality to serialize datetime objects for JSON responses and to
+optimize database queries for performance.
 """
 
 import json
 import logging
+from typing import Any
 
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import aliased, load_only
@@ -27,21 +19,29 @@ from app.models.station import Station
 from app.models.weather import Weather
 
 
-def serialize_datetime(dt):
-    """Helper function to serialize datetime objects to a JSON-friendly format."""
-    return dt.strftime("%Y-%m-%d %H:%M:%S") if dt else None
+def serialize_datetime(dt: Any) -> Any:
+    """Serialises datetime objects to a JSON - friendly format.
 
-
-def get_latest_weather_data():
-    """Fetches the latest weather data from the database.
-
-    This function queries the database for the most recent weather data entry,
-    formats it into a dictionary, and returns it. If an error occurs during the
-    database query, it logs the exception and returns an empty dictionary.
+    Args:
+        dt(datetime.datetime): The datetime object to serialise.
 
     Returns:
-        dict: A dictionary containing the latest weather data if
-        successful, otherwise an empty dictionary.
+        str: A string representation of the datetime in "%Y-%m-%d %H:%M:%S" format,
+             or None if dt is None.
+    """
+    return dt.strftime("%Y-%m-%d %H:%M:%S")
+
+
+def get_latest_weather_data() -> Any:
+    """Fetches the latest weather data from the database.
+
+    Queries the database for the most recent weather data entry, formats it into a
+    dictionary, and returns it. If an error occurs during the database query, it logs
+    the exception and returns an empty dictionary.
+
+    Returns:
+        dict: A dictionary containing the latest weather data if successful,
+              otherwise an empty dictionary.
     """
     try:
         # Use load_only to optimise performance by loading only the necessary
@@ -70,31 +70,29 @@ def get_latest_weather_data():
             # Separate the general weather info from more specific details for
             # better readability and organization.
             if latest_weather:
-                return json.dumps(
-                    {
-                        "weather_info": {
-                            "Temperature": float(latest_weather.Temperature),
-                            "FeelsLike": float(latest_weather.FeelsLike),
-                            "Condition": latest_weather.WeatherCondition,
-                            "Description": latest_weather.WeatherDescription,
-                        },
-                        "details": {
-                            "Humidity": float(latest_weather.Humidity),
-                            "WindSpeed": float(latest_weather.WindSpeed),
-                            "Visibility": float(latest_weather.Visibility),
-                        },
-                    }
-                )
+                return json.dumps({
+                    "weather_info": {
+                        "Temperature": float(latest_weather.Temperature),
+                        "FeelsLike": float(latest_weather.FeelsLike),
+                        "Condition": latest_weather.WeatherCondition,
+                        "Description": latest_weather.WeatherDescription,
+                    },
+                    "details": {
+                        "Humidity": float(latest_weather.Humidity),
+                        "WindSpeed": float(latest_weather.WindSpeed),
+                        "Visibility": float(latest_weather.Visibility),
+                    },
+                })
             return json.dumps({})
 
 
-def get_stations_data():
+def get_stations_data() -> Any:
     """Fetches data for all stations from the database.
 
-    This function queries the database for all station entries, including their
-    latest availability information. It formats each station's data into a
-    dictionary and returns a list of these dictionaries. If an error occurs
-    during the database query, it logs the exception and returns an empty list.
+    Queries the database for all station entries, including their latest availability
+    information. It formats each station's data into a dictionary and returns a list
+    of these dictionaries. If an error occurs during the database query, it logs the
+    exception and returns an empty list.
 
     Returns:
         list: A list of dictionaries, each containing data for a

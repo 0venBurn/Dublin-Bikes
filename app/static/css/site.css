@@ -1,131 +1,422 @@
+:root {
+  /* Typography */
+  --font-family-system: -apple-system, blinkmacsystemfont, "Segoe UI", roboto,
+    helvetica, arial, sans-serif;
+  --font-size-base: 1rem;
+  --font-size-medium: 1.25rem;
+  --font-size-large: 1.75rem;
+  --line-height-base: 1.6;
+  --font-weight-normal: 400;
+  --font-weight-bold: 600;
+
+  /* Spacing */
+  --spacing-base: 0.5rem;
+  --padding-base: 1rem;
+  --padding-small: 0.5rem;
+  --margin-base: 1rem;
+  --margin-bottom: 0.5rem;
+  --width-container-max: 1100px;
+  --gap-base: 0.25rem;
+
+  /* Colours */
+  --color-background-primary: #fdfdfd;
+  --color-background-secondary: #f7f7f7;
+  --color-main-background: #ececec;
+  --color-header-background: #f8f8f8;
+  --color-accent: #007aff;
+  --color-accent-hover: #005fcbef;
+  --color-selection-outline: #0076ff80;
+  --color-toggle: #a0a0a0;
+  --color-toggle-hover: #909090;
+  --color-container-border: #d1d6dc;
+  --color-error: #e53e3e;
+  --color-error-background: #fee2e2;
+  --color-error-text: #86181d;
+  --color-text-header: #1a1a1a;
+  --color-text-primary: #3f3e3e;
+  --color-text-on-accent: #fff;
+  --color-text-heading: #2f2e2e;
+
+  /* Borders and Radius */
+  --border-radius-base: 8px;
+
+  /* Shadows */
+  --shadow-base: 0 1px 2px rgb(0 0 0 / 5%);
+  --shadow-hover: 0 4px 8px rgb(0 0 0 / 20%);
+
+  /* Buttons */
+  --button-press-scale: scale(0.95);
+  --button-hover-scale: scale(1.01);
+  --button-press-transition: 0.4 ease-in-out;
+  --button-hover-transition: background-color 0.3s ease;
+
+  /* System */
+  --system-font-smoothing: antialiased;
+}
+
+/*
+  ================================
+  SECTION: Base Styles
+  ================================
+*/
+
+/*
+  --------------------------------
+  SUBSECTION: Reset/Normalise
+  --------------------------------
+*/
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+/*
+  --------------------------------
+  SUBSECTION: Page Defaults
+  --------------------------------
+*/
+
+html {
+  font-family: var(--font-family-system);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  font-weight: var(--font-weight-normal);
+  scroll-behavior: smooth;
+}
+
 body {
-  color: #40a375;
-  text-align: center;
+  color: var(--color-text-primary);
+  background-color: var(--color-main-background);
+  font-family: var(--font-family-system);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  -webkit-font-smoothing: var(--system-font-smoothing);
+  user-select: none;
+  transition: opacity 1s ease-in-out;
+  min-width: 910px;
 }
 
-.page {
-  width: 1000px;
-  text-align: left;
-  margin-left: auto;
-  margin-right: auto;
-  border: 1px solid #d45959;
-  padding: 20px;
+/*
+  --------------------------------
+  SUBSECTION: Headings
+  --------------------------------
+*/
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: var(--font-weight-bold);
+  margin-bottom: 0.25rem;
+  color: var(--color-text-heading);
 }
 
-.parent-container {
-  display: flex;
-  justify-content: space-between;
+h2 {
+  color: var(--color-text-heading);
+  font-size: var(--font-size-medium);
 }
 
-.station-and-list-container {
+/*
+  ================================
+  SECTION: Components
+  ================================
+*/
+
+/*
+  --------------------------------
+  SUBSECTION: Text Elements
+  --------------------------------
+*/
+
+p {
+  margin-bottom: var(--margin-bottom);
+}
+
+strong {
+  font-weight: var(--font-weight-bold);
+}
+
+/*
+  --------------------------------
+  SUBSECTION: Forms
+  --------------------------------
+*/
+
+form {
   display: flex;
   flex-direction: column;
+  gap: var(--gap-base);
 }
 
-.table-container {
-  width: 260px;
-  margin-right: 20px;
+/*
+  --------------------------------
+  SUBSECTION: Button 
+  --------------------------------
+*/
+
+button {
+  margin-top: 0.25rem;
+  padding: var(--padding-small);
+  border-radius: var(--border-radius-base);
+  background-color: var(--color-accent);
+  color: var(--color-text-on-accent);
+  border: none;
+  cursor: pointer;
 }
 
-table {
-  /* flex: 1; */
-  width: 275px;
-  margin-right: 15px;
-  border-style: groove;
+button:hover {
+  background-color: var(--color-accent-hover);
+  transition: var(--button-hover-transition);
+  transform: var(--button-hover-scale);
 }
 
-td {
-  border: 1px solid;
-  padding: 8px;
+button:active {
+  transform: var(--button-press-scale);
+  transition: var(--button-press-transition);
 }
 
-.list-container {
-  width: 275px;
+/*
+  --------------------------------
+  SUBSECTION: Text Input
+  --------------------------------
+*/
+
+input[type="text"] {
+  padding: var(--padding-small);
+  border: 1px solid var(--color-container-border);
+  border-radius: var(--border-radius-base);
+  background-color: var(--color-background-primary);
+  color: var(--color-text-primary);
+  appearance: none;
 }
 
-ol {
-  list-style-type: decimal;
-  font-size: 25px;
-  transform: rotate(340deg);
+input[type="text"]:focus {
+  outline: none;
+  border: 1px solid var(--color-selection-outline);
+  box-shadow: 0 0 0 1px var(--color-selection-outline);
 }
 
-ol li {
-  padding: 5px;
+/*
+  --------------------------------
+  SUBSECTION: Forms
+  --------------------------------
+*/
+
+select {
+  padding: var(--padding-small);
+  border: 1px solid var(--color-container-border);
+  border-radius: var(--border-radius-base);
+  background-color: var(--color-background-primary);
+  color: var(--color-text-primary);
+  appearance: none;
+  gap: var(--gap-base);
 }
 
-.map,
-#map {
-  height: 700px;
-  width: 700px;
-  border-style: groove;
-  margin-left: auto;
+select:focus {
+  outline: none;
+  border: 1px solid var(--color-selection-outline);
+  box-shadow: 0 0 0 1px var(--color-selection-outline);
 }
 
-h3 {
-  color: #6ba6da;
+/*
+  ================================
+  SECTION: Layout
+  ================================
+*/
+
+/*
+  --------------------------------
+  SUBSECTION: Main Content Area
+  --------------------------------
+*/
+
+main {
+  margin: 0 auto;
+  max-width: var(--width-container-max);
+  margin-top: var(--margin-base);
 }
 
-form{
-  width: 300px;
-  padding: 10px;
-  margin: 10px 0;
-  font-size: 20px;
+/*
+  --------------------------------
+  SUBSECTION: Section Styling
+  --------------------------------
+*/
+
+section {
+  margin-bottom: var(--margin-bottom);
+  padding: 0.5rem;
+  background-color: var(--color-background-secondary);
+  border-radius: var(--border-radius-base);
 }
 
-select, button {
-  width: 50%; /* Makes select elements and button take full width of the form */
-  padding: 10px 15px; /* Adds padding inside select elements and button */
-  margin-top: 10px; /* Adds top margin for spacing */
-  border-radius: 5px; /* Rounds the corners of the select elements and button */
-  border: 1px solid #ccc; /* Adds a border to the elements */
-  }
+/*
+  --------------------------------
+  SECTION: Header
+  --------------------------------
+*/
 
-option {
-    color: black; /* Ensure text color is visible against the background */
-}
-.modal {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1000; /* Increased z-index to ensure it's on top of other content */
-    left: 0;
-    top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+header {
+  background-color: var(--color-header-background);
+  padding: 1.25rem 0;
+  box-shadow: var(--shadow-base);
+  margin-bottom: 1.25rem;
+  border-radius: var(--border-radius-base);
 }
 
-/* Modal Content Box */
-.modal-content {
-    background-color: #fefefe;
-    margin: 10% auto; /* Adjusted for better vertical alignment */
-    padding: 20px;
-    border: 1px solid #888;
-    border-radius: 10px; /* Rounded corners */
-    width: 30%; /* More box-like appearance */
-    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.5), 0 6px 20px 0 rgba(0,0,0,0.5); /* Enhanced 3D effect */
-    text-align: center; /* Centers text inside the modal */
+header h1 {
+  color: var(--color-text-heading);
+  text-align: center;
+  font-size: var(--font-size-large);
+  font-weight: var(--font-weight-bold);
+  margin: 0;
 }
 
-/* The Close Button */
-.close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-}
+/*
+  ================================
+  SECTION: General Sections 
+  ================================
+*/
 
-.close:hover,
-.close:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
-}
-.modal {
+.section-header {
+  position: relative;
   display: flex;
-  align-items: center; /* Aligns children vertically in the center */
-  justify-content: center; /* Aligns children horizontally in the center */
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
 }
-.modal-content {
-  margin: 0; /* Remove margin since flexbox is taking care of centering */
+
+.toggle-indicator {
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  font-size: var(--font-size-base);
+  color: var(--color-toggle);
+  user-select: none;
+}
+
+.toggle-indicator:hover {
+  color: var(--color-toggle-hover);
+}
+
+/*
+  ================================
+  SECTION: Prediction Section
+  ================================
+*/
+
+#prediction-text {
+  margin-top: var(--padding-base);
+  margin-bottom: 0;
+}
+
+/*
+  ================================
+  SECTION: Main Section
+  ================================
+*/
+
+.main-section {
+  display: flex;
+  flex-direction: row;
+  gap: var(--spacing-base);
+}
+
+/*
+  --------------------------------
+  SUBSECTION: Stations Container
+  --------------------------------
+*/
+
+.information-container {
+  display: flex;
+  flex-direction: column;
+  width: 33.33%;
+}
+
+.selected-station-container,
+.nearest-station-container,
+.find-route-container,
+.search-prediction-container {
+  background: var(--color-background-primary);
+  padding: var(--padding-base);
+  border-radius: var(--border-radius-base);
+  box-shadow: var(--shadow-base);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-base);
+}
+
+.station-route-container,
+.search-prediction-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-base);
+}
+
+.search-inputs-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-base);
+}
+
+/*
+  --------------------------------
+  SUBSECTION: Map Container
+  --------------------------------
+*/
+
+.map-window-container {
+  padding: var(--padding-small);
+  background-color: var(--color-background-secondary);
+  border-radius: var(--border-radius-base);
+  flex-grow: 1;
+  height: 45rem;
+  margin-bottom: var(--margin-bottom);
+}
+
+.map-container {
+  flex-grow: 1;
+  height: 44rem;
+  border-radius: var(--border-radius-base);
+  overflow: hidden;
+}
+
+/*
+  ==================================
+  SECTION: Messages
+  ==================================
+*/
+
+/*
+  --------------------------------
+  SUBSECTION: Error
+  --------------------------------
+*/
+#error-container {
+  color: var(--color-error-text);
+  background-color: var(--color-error-background);
+  border: 1px solid var(--color-error);
+  padding: 20px;
+  margin: 20px auto;
+  display: none;
+  border-radius: var(--border-radius-small);
+  box-shadow: var(--shadow-small);
+  font-size: var(--font-size-base);
+  text-align: center;
+  max-width: 600px;
 }

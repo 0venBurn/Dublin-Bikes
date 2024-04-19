@@ -1,6 +1,6 @@
 {
   "name": "dublin_bikes_availability",
-  "version": "2024.02.28",
+  "version": "2024.04.19",
   "description": "A web application to display real-time occupancy and weather data for Dublin Bikes stations.",
   "main": "app.py",
   "repository": {
@@ -12,6 +12,7 @@
     "test": "tests"
   },
   "devDependencies": {
+    "cz-git": "^1.8.0",
     "eslint": "^8.57.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^9.1.0",
@@ -22,16 +23,18 @@
     "stylelint-config-standard": "^36.0.0"
   },
   "scripts": {
-    "lint:eslint": "npx eslint .",
     "fix:eslint": "npx eslint . --fix",
-    "lint:stylelint": "npx stylelint '**/*.css'",
     "fix:stylelint": "npx stylelint '**/*.css' --fix",
-    "check:prettier": "npx prettier --check .",
     "format:prettier": "npx prettier --write .",
     "lint:htmlhint": "npx htmlhint '**/*.html'",
-    "lint:ruff": "ruff check .",
     "fix:ruff": "ruff check . --fix",
-    "format:ruff": "ruff format ."
+    "format:ruff": "ruff format .",
+    "cm": "npx czg"
+  },
+  "config": {
+    "commitizen": {
+      "path": "node_modules/cz-git"
+    }
   },
   "author": "Emma Nolan",
   "contributors": [
