@@ -1,17 +1,14 @@
-"""
-This module contains functions to scrape weather data from an API and insert it into a MySQL database.
+"""Web scraping API for weather data.
 
-Functions:
-- get_weather_data: Fetches weather data from the API.
-- connect_to_database: Connects to the MySQL database.
-- create_and_insert_weather_data: Creates a table in the database and inserts the weather data.
-
+This script fetches data from an API, validates it against a JSON schema, and
+inserts it into a MySQL database.
 """
 
 from __future__ import annotations
 
 import os
 from datetime import datetime
+from typing import Any
 
 import requests
 import sqlalchemy
@@ -32,6 +29,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import Session
 
 load_dotenv()
+
 
 api_key = os.getenv("WEATHER_API")
 url = str(os.getenv("WEATHER_URL"))
@@ -133,7 +131,7 @@ weather_data_schema = {
 }
 
 
-def get_weather_data() -> dict | None:
+def get_weather_data() -> Any | None:
     """
     Fetches weather data from the API.
 
@@ -141,14 +139,16 @@ def get_weather_data() -> dict | None:
         dict | None: The weather data as a dictionary, or None if there was an error.
     """
     params = {
-        "lat": 53.3498,  # Latitude for Dublin
-        "lon": -6.2603,  # Longitude for Dublin
-        "exclude": "minutely,hourly,daily,alerts",  # Exclude unnecessary data
-        "units": "metric",  # Use metric units
-        "appid": api_key,  # Your API key
+        "lat": 53.3498,  # Latitude for Dublin.
+        "lon": -6.2603,  # Longitude for Dublin.
+        "exclude": "minutely,hourly,daily,alerts",
+        "units": "metric",
+        "appid": api_key,
     }
 
-    response = requests.get(url, params=params, timeout=5)  # Add timeout parameter
+    response = requests.get(
+        url, params={k: str(v) for k, v in params.items()}, timeout=5
+    )
 
     if response.status_code == SUCCESS_STATUS_CODE:
         weather_data = response.json()
@@ -173,22 +173,23 @@ def connect_to_database() -> sqlalchemy.engine.base.Engine | None:
     connection_string = (
         f"mysql+mysqlconnector://{db_username}:{db_password}@{host}/{db}"
     )
+
     try:
         return create_engine(connection_string)
     except sqlalchemy.exc.OperationalError as e:
         print(f"Error connecting to database: {e}")
-    return None  # type: ignore  # noqa: PGH003
+    return None  # type: ignore
 
 
 def create_and_insert_weather_data(
-    engine: sqlalchemy.engine.base.Engine, data: dict
+    engine: sqlalchemy.engine.base.Engine, data: dict[str, Any]
 ) -> None:
     """
     Creates a table in the database and inserts the weather data.
 
     Args:
-        engine (sqlalchemy.engine.base.Engine): The database engine.
-        data (dict): The weather data to insert.
+        engine(sqlalchemy.engine.base.Engine): The database engine.
+        data(dict): The weather data to insert.
 
     Returns:
         None
@@ -241,7 +242,6 @@ def create_and_insert_weather_data(
     session.close()
 
 
-# Final script
 data = get_weather_data()
 if data:
     engine = connect_to_database()

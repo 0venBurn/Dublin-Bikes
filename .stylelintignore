@@ -1,0 +1,53 @@
+# Build System
+build/
+dist/
+
+# Environments
+.env
+.venv
+env.bak/
+env/
+ENV/
+venv.bak/
+venv/
+
+# IDEs
+.idea/
+.vscode/
+
+# Package Management
+node_modules/
+package-lock.json
+
+# Python and Flask
+__pycache__/
+.eggs/
+.ipynb_checkpoints
+.mypy_cache/
+.nox/
+.pybuilder/
+.pyre/
+.pytest_cache/
+.pytype/
+.ropeproject
+.ruff_cache/
+.spyderproject
+.spyproject
+.tox/
+.webassets-cache
+*.egg-info/
+**/*.py
+build/
+dist/
+docs/_build/
+eggs/
+htmlcov/
+instance/
+lib/
+lib64/
+parts/
+pyrightconfig.json
+sdist/
+target/
+var/
+wheels/

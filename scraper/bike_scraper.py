@@ -1,24 +1,13 @@
-"""
-Web scraping API, Creates Database and then writes to Database in intervals.
+"""Web scraping API for Bike Stations.
 
 This script fetches data from an API, validates it against a JSON schema,
-and writes the data to a MySQL database. It consists of several functions
-that handle different tasks such as fetching data, creating a database connection,
-creating database tables, and writing data to the tables.
-
-Functions:
-- get_data(): Fetches data from an API and validates it against a JSON schema.
-- create_connection(): Creates a connection to the MySQL database.
-- create_tables(engine): Creates station and availability tables in the database.
-- write_to_station_table(session, station_table, data): Writes data to the station table in the database.
-- write_to_availability_table(session, availability_table, data): Writes availability data to the specified availability table in the database.
+and writes the data to a MySQL database.
 """
 
-
-# Import necessary modules
 from __future__ import annotations
 
 import json
+import logging
 import os
 from datetime import datetime
 from typing import TYPE_CHECKING, Any
@@ -44,18 +33,22 @@ from sqlalchemy.orm import Session, sessionmaker
 if TYPE_CHECKING:
     from sqlalchemy.engine.base import Engine
 
-# Load .env
+
 load_dotenv()
 
-# Set credentials and check for errors
+# Set credentials and check for errors.
 api_key = os.getenv("URL")
 if api_key is None:
-    msg = "Api key not set in .env"
+    msg = "API key not set in .env."
     raise Exception(msg)  # noqa: TRY002
 db_username = os.getenv("DB_USERNAME")
 db_password = os.getenv("DB_PASSWORD")
 db = os.getenv("DB")
 host = os.getenv("HOST")
+
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s"
+)
 
 
 def get_data() -> list[dict[str, Any]] | None:
@@ -66,7 +59,6 @@ def get_data() -> list[dict[str, Any]] | None:
         data: The fetched data if successful, None otherwise.
     """
     response = requests.get(str(api_key), timeout=10)
-    # Check if HTTP request is OK
     http_ok = 200
 
     if response.status_code != http_ok:
@@ -74,7 +66,8 @@ def get_data() -> list[dict[str, Any]] | None:
         raise Exception(msg)  # noqa: TRY002
     try:
         data = json.loads(response.text)
-        # json schema to validate loaded json
+
+        # Define JSON schema to validate loaded data.
         schema = {
             "type": "array",
             "items": {
@@ -116,20 +109,21 @@ def get_data() -> list[dict[str, Any]] | None:
                 ],
             },
         }
-        # Validate json against the schema
+
+        # Validate loaded data against schema.
         validate(instance=data, schema=schema)
 
-        return data  # type: ignore  # noqa: TRY300, PGH003
+        return data  # type: ignore  # noqa: TRY300
 
-    # Exception block for possible errors
+    # Exception block for possible errors.
     except json.JSONDecodeError:
-        print("Invalid Error")
+        logging.exception("Invalid Error. Please check the JSON data.")
         return None
-    except ValidationError as e:
-        print(f"Json validation error as {e}")
+    except ValidationError:
+        logging.exception("JSON validation error.")
         return None
-    except Exception as e:  # noqa: BLE001
-        print(f"Error fetching data {e}")
+    except Exception:
+        logging.exception("Error fetching data.")
         return None
 
 
@@ -146,8 +140,8 @@ def create_connection() -> Engine | None:
     )
     try:
         return create_engine(connection_string)
-    except sqlalchemy.exc.OperationalError as e:
-        print(f"Error connecting to database: {e}")
+    except sqlalchemy.exc.OperationalError:
+        logging.exception("Error connecting to database.")
         return None
 
 
@@ -160,12 +154,10 @@ def create_tables(engine: Engine) -> tuple[Table, Table]:
 
     Returns:
         tuple: A tuple containing the station table and availability table objects.
-
     """
-    # Set MetaData()
     meta_data = MetaData()
 
-    # Create station table
+    # Create Station table (static data).
     station_table = Table(
         "station",
         meta_data,
@@ -178,7 +170,7 @@ def create_tables(engine: Engine) -> tuple[Table, Table]:
         Column("position_lng", Float),
     )
 
-    # Create Dynamic Table
+    # Create Availability table (dynamic data).
     availability_table = Table(
         "availability",
         meta_data,
@@ -196,7 +188,7 @@ def create_tables(engine: Engine) -> tuple[Table, Table]:
         Column("available_bike_stands", Integer),
         Column("status", String(128)),
     )
-    # Use create_all method to create tables and return tables
+
     meta_data.create_all(engine)
     return station_table, availability_table
 
@@ -211,18 +203,15 @@ def write_to_station_table(
         session (Session): The database session.
         station_table (Table): The table object representing the station table.
         data (list): A list of dictionaries containing the data to be written.
-
-    Returns:
-        None
     """
     try:
         for point in data:
-            # Check if the record already exists
+            # Check if record of station already exists.
             existing_station = (
                 session.query(station_table).filter_by(number=point["number"]).first()
             )
 
-            # If it doesn't exist write to data
+            # If it doesn't exist, write to data.
             if existing_station is None:
                 station = station_table.insert().values(
                     number=point["number"],
@@ -235,13 +224,11 @@ def write_to_station_table(
                 )
                 session.execute(station)
                 session.commit()
-            else:
-                # Print if it exits
-                print(f"Record with number {point['number']} already exists")
+
     # Make exception for integrity error and rollback session
-    except IntegrityError as e:
+    except IntegrityError:
         session.rollback()
-        print(f"Error: {e}")
+        logging.exception("Error")
 
 
 def write_to_availability_table(
@@ -254,20 +241,18 @@ def write_to_availability_table(
         session (Session): The database session.
         availability_table (Table): The availability table in the database.
         data (list): A list of availability data points to be written.
-
-    Returns:
-        None
     """
     try:
         current_datetime = datetime.now()
         for point in data:
-            # Check if the record already exists
+            # Check if record of availability already exists.
             existing_availability = (
                 session.query(availability_table)
                 .filter_by(number=point["number"], last_update=current_datetime)
                 .first()
             )
-            # If it doesn't exist write to data
+
+            # If it doesn't exist, write to data.
             if existing_availability is None:
                 availability = availability_table.insert().values(
                     number=point["number"],
@@ -278,27 +263,25 @@ def write_to_availability_table(
                 )
                 session.execute(availability)
                 session.commit()
-            else:
-                # Print if it exists
-                print(
-                    f"Record with number {point['number']} and last_update {current_datetime} already exists"
-                )
-    # Make exception for integrity error and rollback session
-    except IntegrityError as e:
+
+    # Make exception for integrity error and rollback session.
+    except IntegrityError:
         session.rollback()
-        print(f"Error: {e}")
+        logging.exception("Error")
 
 
-# Get data from api
+# Fetch data from API
 data = get_data()
-# Create a connection
+# Create connection to database.
 engine = create_connection()
-# If connection is successful create the tables and create session
+
+# If connection is successful, create the tables and create session.
 if engine:
     station_table, availability_table = create_tables(engine)
-    session_maker = sessionmaker(bind=engine)  # type: ignore  # noqa: PGH003
+    session_maker = sessionmaker(bind=engine)
     session = session_maker()
-    # If there is data, write it to the station and availability table in db
+
+    # If there is data, write it to the station and availability table in the database.
     if data:
         write_to_station_table(session, station_table, data)
         write_to_availability_table(session, availability_table, data)
