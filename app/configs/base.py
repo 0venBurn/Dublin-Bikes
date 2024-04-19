@@ -11,11 +11,10 @@ class Config:
     PASSWORD = os.getenv("DB_PASSWORD")
     DATABASE = os.getenv("DB")
     HOST = os.getenv("HOST")
-    LOCAL_PORT = os.getenv("LOCAL_PORT")
 
     # This URI contains the database connection information required by SQLAlchemy.
     SQLALCHEMY_DATABASE_URI = (
-        f"mysql+pymysql://{USERNAME}:{PASSWORD}@localhost:{LOCAL_PORT}/{DATABASE}"
+        f"mysql+pymysql://{USERNAME}:{PASSWORD}@{HOST}/{DATABASE}"
     )
 
     # Disable the SQLAlchemy event system, which can lead to significant overhead if not needed.
